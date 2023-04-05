@@ -3,11 +3,12 @@ from Deck import Deck
 from Waste import Waste
 from Foundation import Foundation
 from Table import Table
+from pygame.locals import RESIZABLE
 import time
 
 pygame.init()
 window_size = (900, 885)
-screen = pygame.display.set_mode(window_size)
+screen = pygame.display.set_mode(window_size, RESIZABLE)
 pygame.display.set_caption("Solitario")
 game_is_running = True
 
@@ -185,8 +186,7 @@ def card_follow_mouse(mouse_x, mouse_y):
 def create_tables():
     tables = []
     x = 25
-    card_amount = 1
-    for i in range(0, 7):
+    for card_amount in range(1, 8):
         tables.append(Table(x, deck, card_amount))
         x += 125
         card_amount += 1
