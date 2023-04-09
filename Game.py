@@ -13,20 +13,16 @@ pygame.init()
 # Luego se define el tamaño de la ventana de juego. Primero el eje X y luego el eje Y.
 window_size = (900, 885)
 
-"""Se utiliza la función *pygame.display.set_mode()* 
-para crear la ventana con el tamaño definido."""
+"""Se utiliza la función *pygame.display.set_mode()* para crear la ventana con el tamaño definido."""
 screen = pygame.display.set_mode(window_size, RESIZABLE)
 
-"""Luego se utiliza la función *pygame.display.set_caption()* 
-para establecer el título de la ventana."""
+"""Luego se utiliza la función *pygame.display.set_caption()* para establecer el título de la ventana."""
 pygame.display.set_caption("Solitario")
 
-"""Se instancia la variable booleana *game_is_running* 
-que se utilizará para mantener encendido el juego."""
+"""Se instancia la variable booleana *game_is_running* que se utilizará para mantener encendido el juego."""
 game_is_running = True
 
-"""Finalmente se guarda en la variable backgroundImage se utiliza la función 
-*pygame.image.load()* para cargar la imagen del fondo del juego."""
+"""Finalmente se guarda en la variable backgroundImage se utiliza la función *pygame.image.load()* para cargar la imagen del fondo del juego."""
 backgroundImage = pygame.image.load("D:/My Drive/Universidad/CUARTO AÑO/Modelos y Simulación/Método de Montecarlo/Montecarlo/Solitario-Montecarlo/assets/backgroundd.jpg")
 
 """Link de donde obtuvimos los gráficos de las cartas utilizadas.
@@ -61,12 +57,13 @@ shuffle_sound = pygame.mixer.Sound('D:/My Drive/Universidad/CUARTO AÑO/Modelos 
 shuffle_sound.play()
 
 """Función que comprueba si el usuario hizo click en el mazo de residuo no visible.
-Si lo ha hecho, se comprueba si el mazo está vacío. Si lo está, las cartas
-de la pila de residuo visible se devuelven a la pila de residuo no visible y se barajan. 
+Si lo ha hecho, se comprueba si el mazo está vacío. Si lo está, las cartas de la pila de residuo visible se devuelven a la pila de residuo no visible y se barajan. 
 Si no lo está, se añade una carta a la pila de residuo visible."""
 def clicked_new_card(mouse_x, mouse_y):
+    
     """Se declara la variable global *moves*."""
     global moves
+    
     """Verifica SI las coordenadas del cursor están dentro de un rectángulo que se supone
     que contiene la carta del mazo."""
     if mouse_x > 9 and mouse_x < 106 and mouse_y > 14 and mouse_y < 155:
@@ -87,33 +84,26 @@ def clicked_new_card(mouse_x, mouse_y):
             waste.add_card(deck.remove_card())
             place_sound.play()
 
-"""
-Comprueba si el usuario esta sosteniendo alguna carta. Si es así, se actualiza
-la posición de la carta para que coincida con la posición del cursor.
-Si el usuario no está sosteniendo ninguna carta, se comprueba si el cursor está
-sobre una carta que se pueda mover. Si es así, se añade esa carta y todas las cartas
-debajo de ella a la lista *holding_cards* y se establece *holding_card_group* en el
-grupo de cartas correspondiente.
-"""
+"""Comprueba si el usuario esta sosteniendo alguna carta. Si es así, se actualiza la posición de la carta para que coincida con la posición del cursor.
+Si el usuario no está sosteniendo ninguna carta, se comprueba si el cursor está sobre una carta que se pueda mover. 
+Si es así, se añade esa carta y todas las cartas debajo de ella a la lista *holding_cards* y se establece *holding_card_group* en el grupo de cartas correspondiente."""
 def check_holding_card(mouse_x, mouse_y):
-    """Se declaran las variables globales *holding_card_group* *holding_cards* *mouse_cords*
-    Se declara la lista vacía *possible_cards*
-    Se guardan las coordenadas del cursor en la variable *mouse_cards*"""
+    """Se declaran las variables globales *holding_card_group* *holding_cards* *mouse_cords*,
+    Se declara la lista vacía *possible_cards*,
+    Se guardan las coordenadas del cursor en la variable *mouse_cards*."""
     global holding_card_group, holding_cards, mouse_cords
     possible_cards = []
     mouse_cords = (mouse_x, mouse_y)
 
-    """Se itera sobre la lista de objetos *tables*, y por cada objeto se itera sobre las cartas en la
-    mesa (almacenadas en *table.get_table()*). Si la carta está en la posición de frente, se agrega
-    a la lista possible_cards como una tupla con la carta y la mesa donde se encuentra."""
+    """Se itera sobre la lista de objetos *tables*, y por cada objeto se itera sobre las cartas en la mesa (almacenadas en *table.get_table()*). 
+    Si la carta está en la posición de frente, se agrega a la lista possible_cards como una tupla con la carta y la mesa donde se encuentra."""
     for table in tables:
         for table_card in table.get_table():
             if table_card.is_front_showing():
                 possible_cards.append((table_card, table))
 
-    """Se itera sobre la lista de objetos *foundations*, y por cada objeto se obtiene la carta en la
-    cima de la pila (almacenada en *foundation.get_top_card()*). Si hay una carta en la cima, 
-    se agrega a la lista *possible_cards* como una tupla con la carta y la foundation donde se encuentra."""
+    """Se itera sobre la lista de objetos *foundations*, y por cada objeto se obtiene la carta en la cima de la pila (almacenada en *foundation.get_top_card()*). 
+    Si hay una carta en la cima, se agrega a la lista *possible_cards* como una tupla con la carta y la foundation donde se encuentra."""
     for foundation in foundations:
         foundation_card = foundation.get_top_card()
         if foundation_card!=None:
@@ -128,9 +118,8 @@ def check_holding_card(mouse_x, mouse_y):
     """Se itera sobre la lista *possible_cards*, y por cada carta se obtienen sus coordenadas con *card_x* y *card_y*. 
     Luego, se verifica si las coordenadas del cursor se encuentran sobre la carta y si es así, 
     se establece la variable global *holding_card_group* a la table/foundtaion/deck de descarte de la carta. 
-    Si la table/foundation es tables, entonces se obtienen las cartas debajo de la carta seleccionada
-    y se almacenan en la variable global *holding_cards*. Si la table/foundation es otra cosa, se establece
-    la variable global *holding_cards* como una lista con la carta seleccionada."""
+    Si la table/foundation es tables, entonces se obtienen las cartas debajo de la carta seleccionada y se almacenan en la variable global *holding_cards*. 
+    Si la table/foundation es otra cosa, se establece la variable global *holding_cards* como una lista con la carta seleccionada."""
     for card in possible_cards:
         card_x = card[0].get_coordinates()[0]
         card_y = card[0].get_coordinates()[1]
@@ -141,10 +130,35 @@ def check_holding_card(mouse_x, mouse_y):
             else:
                 holding_cards = [card[0]]
 
+"""
+La función *place_card(a, b)* es una función que se llama cuando el jugador intenta colocar una carta arrastrándola con el cursor.
+La función comienza por verificar si se está intentando hacer una auto-colocación de una carta sobre la que ya se está sosteniendo. 
+Si es así, entonces la función intenta colocar la carta en una pila de la base o en una pila de la foundation, según corresponda.
+
+Si la carta no se está colocando en la misma posición donde se la está sosteniendo, entonces se determina la columna de la tabla donde
+se intenta colocar la carta arrastrada, y se verifica si la carta puede ser colocada en esa columna de acuerdo a las reglas del solitario.
+Si no puede ser colocada en ninguna columna de la tabla, entonces se intenta colocarla en una de las foundations.
+Si la carta no puede ser colocada en ninguna parte, se la deja en su posición original.
+En cada caso en que se pueda colocar la carta, se remueve de la mano del jugador y se reproduce un sonido.
+Al final, la función ajusta las cartas que quedan en la mano del jugador.
+"""
 def place_card(mouse_x, mouse_y):
+    
+    """Se declaran las variables globales que se utilizan en la función. 
+    *holding_card_group* es un objeto que representa un grupo de cartas que se están sujetando,
+    *holding_cards* es una lista de objetos de carta que se están sujetando, 
+    *mouse_cords* es una tupla que representa la ubicación actual del mouse,
+    *tables* es una lista de objetos de tabla que representan las siete pilas de cartas en el juego, y 
+    *moves* es un contador de movimientos realizados en el juego."""
     global holding_card_group, holding_cards, mouse_cords, tables, moves
 
-    #auto fill with click
+    """Este bloque de código se ejecuta si el cursor está en la mismas coordenadas que en la última llamada a la función.
+    El código mueve una carta 'automáticamente' hacia su próxima posición posible, con un click (autofill click).
+    Si solo se está sujetando una carta (*holding_cards* tiene una longitud de 1), se verifica si la carta se puede colocar en una foundation. 
+    (Las foundations son las cuatro pilas de cartas que se construyen en orden ascendente según su palo).
+    Si la carta que se está sujetando es del mismo palo que la cima de una foundation existente y su valor es uno más alto, 
+    se coloca la carta en la cima de la foundation y se eliminan las cartas sujetadas. 
+    Finalmente se reproduce un sonido de colocación de carta y se aumenta el contador de movimientos."""
     if mouse_cords == (mouse_x, mouse_y):
         if len(holding_cards)==1:
             for foundation in foundations:
@@ -165,6 +179,14 @@ def place_card(mouse_x, mouse_y):
                             moves += 1
                             return
 
+        """Esta parte del código itera a través de una lista de objetos *table* y comprueba si el objeto *holding_cards* puede ser colocado en alguna de ellas. 
+        Si se encuentra una *table* donde se pueda colocar la carta, se añaden todas las cartas de *holding_cards* a esa *table*
+        usando el método *add_cards()* y se eliminan de *holding_card_group* usando el método *remove_card()*.
+        También se reproduce un sonido de colocación y se actualiza el contador de movimientos.
+
+        La condición para poder colocar la carta es que la última carta de la mesa tenga el valor de un número menor que la carta que se está intentando colocar y
+        que los colores de las cartas sean diferentes. Si la última carta de la mesa no existe, se comprueba si la carta que se está intentando colocar es un Rey (valor 13)
+        y se puede colocar en la mesa vacía. Si se encuentra una mesa adecuada para colocar la carta, se usa *return* para salir de la función."""
         for table in tables:
             bottom_card = table.bottom_card()
             if bottom_card!=None:
@@ -184,16 +206,35 @@ def place_card(mouse_x, mouse_y):
                     place_sound.play()
                     moves += 1
                     return
+                
+
     else:
+        """Si no se cumple la primera condición (la carta se ha soltado en un palo de Foundation), entonces ejecuta el siguiente bloque de código.
+        Crea una lista llamada "positions" que contiene las posiciones horizontales de las siete pilas de cartas de juego. 
+        La lista está ordenada de derecha a izquierda (del palo de cartas de juego más cercano al borde derecho de la pantalla al palo de cartas de juego más cercano al borde izquierdo de la pantalla).
+        Inicializamos una variable *count* con valor 0.
+        """
         positions = [950, 825, 710, 590, 470, 355, 242, 120]
         count = 0
+        
+        """Se itera a través de la lista *positions* 
+        Si la posición actual en el bucle (representada por *pos*) es menor que la posición horizontal del mouse (representada por *mouse_x*),
+        entonces se rompe el bucle y se actualiza el valor de *count* al número de posiciones en la lista que son menores que la posición horizontal del mouse. """
         for pos in positions:
-            if mouse_x>pos:
+            if mouse_x > pos:
                 break
-            count+=1
-        if count>0:
+            count += 1
+        
+        """ Si *count* es mayor que cero, significa que el cursor está a la derecha de la primera *table*, por lo que se puede soltar la carta en una *table*."""
+        if count > 0:
+            """Se obtiene la *table* correspondiente al valor de *count*, donde el valor 7 representa la última *table* y el valor 0 la primera """
             table = tables[7-count]
+            """Se obtiene la *bottom_card*, que es la carta inferior de la *table* seleccionada."""
             bottom_card = table.bottom_card()
+            
+            """Si hay una carta en la *table* seleccionada, se compara su color y valor con la carta que se está sosteniendo.
+            Si la *bottom_card* tiene un color diferente y su valor es exactamente uno menor que la carta sostenida,
+            se colocan las cartas sostenidas en la mesa, se eliminan de la mano, se reproduce un sonido y se incrementa el contador de movimientos."""
             if bottom_card != None:
                 value = bottom_card.get_value()
                 if bottom_card.get_color() != holding_cards[0].get_color() and value - 1 == holding_cards[
@@ -204,7 +245,9 @@ def place_card(mouse_x, mouse_y):
                         place_sound.play()
                         moves+=1
                     return
-            else:
+            else: # Si no hay una carta en la *table* seleccionada, se comprueba si la carta sostenida es un Rey (valor 13). 
+                
+                """Si es así, se coloca la carta en la mesa, se elimina de la mano, se reproduce un sonido y se incrementa el contador de movimientos."""
                 if holding_cards[0].get_value() == 13:
                     table.add_cards(holding_cards)
                     for card in holding_cards:
@@ -212,31 +255,50 @@ def place_card(mouse_x, mouse_y):
                     place_sound.play()
                     moves += 1
                     return
-        else:
+        else: # Si no se cumple la condición anterior (es decir, si no se hizo click en una de las *tables*), el código entra en este bloque de código.
+            
+            """Se recorren las Foundation."""
             for foundation in foundations:
+                
+                """Si la Foundation actual es del mismo palo que la carta que se estás sosteniendo en el cursor del mouse, se ejecuta el bloque de código."""
                 if foundation.get_suit() == holding_cards[0].get_suit():
+                    
+                    """Se obtiene la carta superior de la foundation actual."""
                     foundation_card = foundation.get_top_card()
-                    if foundation_card!=None:
+                    
+                    """Si hay una carta en la Foundation, se ejecuta el siguiente código."""
+                    if foundation_card != None:
+                        
+                        """Si la carta sostenida en el cursor del mouse tiene un valor que es 1 unidad mayor que el valor de la carta superior de la foundation actual, se ejecuta el siguiente bloque de código.
+                        La carta sostenida en el cursor del mouse se agrega a la foundation actual, se elimina de la lista de cartas sostenidas y se reproduce un sonido de "colocación". 
+                        Además, se incrementa el número de movimientos realizados y se sale de la función."""
                         if foundation_card.get_value()+1 == holding_cards[0].get_value():
                             foundation.add_card(holding_cards[0])
                             holding_card_group.remove_card()
                             place_sound.play()
                             moves += 1
                             return
-                    else:
+                    else: # Si no hay cartas en la foundation actual, se ejecuta el siguiente bloque de código.
+                        
+                        """SI la carta sostenida en el cursor es un AS (valor igual a 1), se ejecuta el siguiente bloque de código."""
                         if holding_cards[0].get_value() == 1:
+                            
+                            """La carta sostenida en el cursor se agrega a la foundation actual, se elimina de la lista de cartas sostenidas y se reproduce un sonido de "colocación". 
+                            Además, se incrementa el número de movimientos realizados y se sale de la función."""
                             foundation.add_card(holding_cards[0])
                             holding_card_group.remove_card()
                             place_sound.play()
                             moves += 1
                             return
 
+    """Se actualiza la posición de todas las cartas en la lista de cartas sostenidas para que se muestren correctamente en la pantalla."""
     holding_card_group.set_cards()
 
-"""Función que permite que las cartas seleccionadas por el usuario sigan
-al cursor mientras se arrastran por la pantalla."""
+
+"""Función que permite que las cartas seleccionadas por el usuario sigan al cursor mientras se arrastran por la pantalla."""
 def card_follow_mouse(mouse_x, mouse_y):
-    """se verifica si se están sosteniedno cartas, es decir, si la variable global *holding_cards* no está vacía."""
+    
+    """Se verifica si se están sosteniedno cartas, es decir, si la variable global *holding_cards* no está vacía."""
     if holding_cards != []:
         
         """Se define la posición de la carta que sigue al cursor:
@@ -247,8 +309,8 @@ def card_follow_mouse(mouse_x, mouse_y):
         y = mouse_y - 50
         pos = 0
         
-        """Se itera a través de las cartas en *holding_cards*, se les asigna una nueva coordenada vertical que se basa en
-        la posición *y* y se incrementa por 40 veces la variable *pos*"""
+        """Se itera a través de las cartas en *holding_cards*, se les asigna una nueva coordenada vertical que se basa en 
+        la posición *y* y se incrementa por 40 veces la variable *pos*."""
         for card in holding_cards:
             card.set_coordinates(x, y + (pos * 40))
             """Finalmente, cada carta se dibuja en pantalla usando la función *draw()* de *pygame.sprite.GroupSingle()*"""
@@ -257,8 +319,7 @@ def card_follow_mouse(mouse_x, mouse_y):
             pos += 1
 
 """Función crea una lista de objetos Table (Las 7 pilas de la mesa) y luego devuelve la lista completa de tablas.
-Se crea una lista *tables*, y se define la variable *x* inicializada en 25 para separar las tablas
-en 25px sobre el eje x.
+Se crea una lista *tables*, y se define la variable *x* inicializada en 25 para separar las tablas en 25px sobre el eje x.
 Luego se  realiza un bucle FOR que itera sobre un rango de 1 a 7 para construir cada tabla.
 En cada iteración se agrega una nueva tabla a la lista *tables*, construyendo un nuevo objeto *Table*.
 Al objeto se le pasa una posición horizontal *x*, el objeto *deck* y la cantidad de cartas a mostrar en
@@ -285,9 +346,7 @@ def create_foundations():
     x = 400
     suits = ["hearts", "diamonds", "spades", "clubs"]
     
-    """Se itera 4 veces,
-    se agrega a la lista *foundations* un nuevo objeto Foundation, con su respectivo palo y coordenada horizontal.
-    """
+    """Se itera 4 veces, se agrega a la lista *foundations* un nuevo objeto Foundation, con su respectivo palo y coordenada horizontal."""
     for i in range(len(suits)):
         foundations.append(Foundation(x, suits[i]))
         x += 125
@@ -328,53 +387,85 @@ def message_display(text, cords):
     TextRect.center = cords
     screen.blit(TextSurf, TextRect)
 
+"""Esta función es el núcleo del juego, en el que se ejecuta todo el código principal."""
 def game_loop():
+    
+    """Se declara la variable global *holding_cards* (puede ser accedida y modificada desde cualquier lugar del programa). 
+    *holding_cards* es una lista de objetos de carta que se están sujetando"""
     global holding_cards
+    
+    """Se establece un bucle *while* que se ejecutará mientras la variable *game_is_running* = True, esta variable controla si el jeugo está en ejecución o no, y es declarada por defecto como True."""
     while game_is_running:
-
+        
+        """En esta línea se obtiene la posición del cursor en la ventana del juego y se guarda en dos variables, *mouse_x* y *mouse_y*."""
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
+        """En este bucle se recorren todos los eventos de la cola de eventos de Pygame. 
+        Esto permite manejar eventos de teclado, mouse y otros eventos relacionados con la ventana del juego."""
         for event in pygame.event.get():
+            
+            """En este bloque de código se verifica si el evento actual es un click del botón del mouse. 
+            Si es así, se llaman a dos funciones: clicked_new_card(x, y) y check_holding_card(x, y)."""
             if event.type == pygame.MOUSEBUTTONDOWN:
                 clicked_new_card(mouse_x, mouse_y)
                 check_holding_card(mouse_x, mouse_y)
+            
+            """En este bloque de código se verifica si el evento actual es la desclick del botón del mouse. 
+            Si *holding_cards* no está vacía, se llama a la función place_card(x, y), se establece *holding_cards* como una lista vacía y se llama a la función waste.set_cards()."""
             if event.type == pygame.MOUSEBUTTONUP:
                 if holding_cards != []:
                     place_card(mouse_x, mouse_y)
                     holding_cards = []
-                    #set because if card is placed the new ones need to pop out
                     waste.set_cards()
+                    
+            """En este bloque de código se verifica si el evento actual es el cierre de la ventana del juego. 
+            Si es así, se llama a la función pygame.quit() para salir de Pygame y se llama a quit() para salir del programa por completo.
+            """
             if event.type==pygame.QUIT:
                 pygame.quit()
                 quit()
 
-        #Draw background image to screen (behind everything)
+        """En esta línea se dibuja la imagen de fondo en la ventana del juego. backgroundImage es una imagen cargada anteriormente. (detrás de todo)"""
         screen.blit(backgroundImage, (0, 0))
 
-        #Draw all cards in tables to the screen
+        """En este bloque de código se dibujan todas las cartas en las *tables* del juego. 
+        Se recorre cada *table* en la lista *tables*, y para cada *table* se recorre su lista de cartas y se dibujan todas las cartas que no están en *holding_cards*.
+        
+        El bucle FOR recorre cada pila de mesas (table) y llama al método get_table() para obtener la lista de cartas de cada pila.
+        Luego, se verifica si la carta no se está sosteniendo con el cursor (not card in holding_cards).
+        Si es así, la carta se dibuja en la pantalla usando el método draw() de pygame.sprite.GroupSingle."""
         for table in tables:
             for card in table.get_table():
                 if not card in holding_cards:
                     pygame.sprite.GroupSingle(card).draw(screen)
 
+        """El bucle FOR recorre cada pila de base (foundation) y llama al método get_top_card() para obtener la carta en la cima de cada pila. 
+        Luego, se verifica si la carta no se está sosteniendo con el cursor (not card in holding_cards). 
+        Si es así, la carta se dibuja en la pantalla usando el método draw() de pygame.sprite.GroupSingle."""
         for foundation in foundations:
             card = foundation.get_top_card()
             if not card in holding_cards:
                 pygame.sprite.GroupSingle(card).draw(screen)
 
-        #Draw all cards in waste bin to the screen
+        """El bucle FOR recorre cada carta en la pila de descarte (waste) llamando al método get_show_waste_pile(). 
+        Luego, se verifica si la carta no se está sosteniendo con el ratón (not card in holding_cards). 
+        Si es así, la carta se dibuja en la pantalla usando el método draw() de pygame.sprite.GroupSingle."""
         for card in waste.get_show_waste_pile():
             if not card in holding_cards:
                 pygame.sprite.GroupSingle(card).draw(screen)
 
-        #Draw cards picked up by mouse
+        """Función que dibuja cualquier carta que se esté sosteniendo con el ratón en la posición actual del ratón."""
         card_follow_mouse(mouse_x, mouse_y)
 
+        """Se llama a la función message_display() tres veces para mostrar el temporizador, la puntuación y el número de movimientos en la parte superior de la pantalla."""
         message_display(str(timer), (352, 39))
         message_display(str(score), (454, 39))
         message_display(str(moves), (561, 39))
 
+        """Función que actualiza la pantalla con los cambios realizados."""
         pygame.display.update()
+        
+        """FUnción que limita la velocidad del juego a 60 fotogramas por segundo."""
         clock.tick(60)
 
 game_loop()
