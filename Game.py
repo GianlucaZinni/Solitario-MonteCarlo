@@ -4,6 +4,7 @@ from Waste import Waste
 from Foundation import Foundation
 from Table import Table
 from pygame.locals import RESIZABLE
+from tkinter import messagebox
 import time
 
 
@@ -31,13 +32,12 @@ http://byronknoll.blogspot.com/2011/03/vector-playing-cards.html"""
 # Se crea la instancia del objeto *Deck()*
 deck = Deck()
 # Se utiliza la función que mezcla el mazo.
-deck.shuffle()
+# deck.shuffle()
 
 # Se crea la instancia del objeto *Waste()*
 waste = Waste()
 
 clock = pygame.time.Clock()
-
 
 # Se declaran las variables globales utilizadas por el juego.
 holding_cards = []         # Lista vacía que se utilizará para almacenar cartas que el usuario esta sosteniendo.
@@ -152,7 +152,7 @@ def place_card(mouse_x, mouse_y):
     *moves* es un contador de movimientos realizados en el juego."""
     global holding_card_group, holding_cards, mouse_cords, tables, moves
 
-    """Este bloque de código se ejecuta si el cursor está en la mismas coordenadas que en la última llamada a la función.
+    """Este bloque de código se ejecuta si el cursor está en la mismas coordenadas que en la última llamada a la función (es la forma de ejecutar el autoclick).
     El código mueve una carta 'automáticamente' hacia su próxima posición posible, con un click (autofill click).
     Si solo se está sujetando una carta (*holding_cards* tiene una longitud de 1), se verifica si la carta se puede colocar en una foundation. 
     (Las foundations son las cuatro pilas de cartas que se construyen en orden ascendente según su palo).
@@ -237,8 +237,7 @@ def place_card(mouse_x, mouse_y):
             se colocan las cartas sostenidas en la mesa, se eliminan de la mano, se reproduce un sonido y se incrementa el contador de movimientos."""
             if bottom_card != None:
                 value = bottom_card.get_value()
-                if bottom_card.get_color() != holding_cards[0].get_color() and value - 1 == holding_cards[
-                    0].get_value():
+                if bottom_card.get_color() != holding_cards[0].get_color() and value - 1 == holding_cards[0].get_value():
                     table.add_cards(holding_cards)
                     for card in holding_cards:
                         holding_card_group.remove_card()
@@ -353,6 +352,68 @@ def create_foundations():
     """Se retornan todas las *foundations*"""
     return foundations
 
+"""Función que verifica constantemente que cada Foundation tenga 13 cartas, si se cumple la condición, se ganó el juego.
+(La idea es que te permita decidir si jugar de nuevo o no)."""
+def check_win():
+    count = 0
+    for foundation in foundations:
+        complete_pile = foundation.get_Foundation()
+        if len(complete_pile) != 13:
+            return
+        else:
+            count += 1
+    print("check_win:", count)
+    if count == 4:
+        
+        count += 1
+        x = messagebox.askquestion(message="¿Do you want to play again?", title="You win the game!")
+        if x == 'yes':
+            pygame.quit()
+            game_loop()
+            # Ver como concha hacer para resetear el juego.
+    
+        else:
+            pygame.quit()
+            quit()
+            
+def check_autowin():
+    count = 0
+    global moves, tables
+    for table in tables:
+        card = table.bottom_card()
+        all_cards = len(table.get_table())
+        card_count = 0
+        for card in table.get_table():
+            if card.is_front_showing():
+                card_count += 1
+        if all_cards == card_count:
+            count += 1
+    if count == 7:
+        for table in tables:
+            card = table.bottom_card()
+            if card is not None:
+                print(card.get_value(), card.get_suit())
+                coords = card.get_coordinates()
+                for foundation in foundations:
+                    time.sleep(0.05)
+                    if foundation.get_suit() == card.get_suit():
+                        foundation_card = foundation.get_top_card()
+                        if foundation_card != None:
+                            if foundation_card.get_value() + 1 == card.get_value():
+                                card_follow_mouse(coords[0], coords[1])
+                                foundation.add_card(card)
+                                table.remove_card()
+                                place_sound.play()
+                                moves += 1
+                                continue
+                        else:
+                            if card.get_value() == 1:
+                                card_follow_mouse(coords[0], coords[1])
+                                foundation.add_card(card)
+                                table.remove_card()
+                                place_sound.play()
+                                moves += 1
+                                continue
 
 """
 Se crean las dos listas del juego, *tables* y *foundations*
@@ -467,5 +528,8 @@ def game_loop():
         
         """FUnción que limita la velocidad del juego a 60 fotogramas por segundo."""
         clock.tick(60)
+        
+        check_win()
+        check_autowin()
 
 game_loop()

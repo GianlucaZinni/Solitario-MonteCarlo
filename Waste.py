@@ -13,13 +13,10 @@ class Waste:
 
     def add_card(self, card):           # agrega una carta a la pila de residuo NO visible.
         card.set_coordinates(-150,0)    # Coordenadas de la pila de residuo NO visible.
-        print("a",card.get_value(), card.get_suit())
-        print("aa", self.waste_pile)
         self.waste_pile.append(card)    
         self.set_cards()
 
     def remove_card(self):              # Remueve la última carta de la pila de residuo NO visible.
-        print("sa", self.waste_pile)
         return self.waste_pile.pop()
 
     def empty(self):                    # Vacía la pila de residuo NO visible esta vacía.
@@ -42,7 +39,6 @@ class Waste:
     def set_cards(self):
         if len(self.waste_pile) > 3:
             self.show_pile = self.waste_pile[len(self.waste_pile) - 3 : len(self.waste_pile)]
-            print("aaa", self.show_pile)
         else:
             self.show_pile = self.waste_pile
         for card_iterator in range(len(self.show_pile)):
