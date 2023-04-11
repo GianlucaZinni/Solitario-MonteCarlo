@@ -60,6 +60,18 @@ class Table:
     def bottom_card(self):                  # Verifica si la pila de cartas de la tabla esta vacía, si no lo está, devuelve la última carta de la pila.
         if len(self.table_cards)>0:
             return self.table_cards[len(self.table_cards)-1]
+        
+    def prev_card(self):                  # Verifica si la pila de cartas de la tabla esta vacía, si no lo está, devuelve la última carta de la pila.
+        if len(self.table_cards)>0:
+            return self.table_cards[len(self.table_cards)-2]
+        
+    def obtain_next_card(self, card_num):
+        try:
+            if len(self.table_cards) > 0:
+                return self.table_cards[card_num-1]
+        except:
+            print("list index out of range")
+
 
     def get_x(self):                        # Retorna la coordenada en el eje x.
         return self.x
@@ -73,14 +85,14 @@ class Table:
     """
     def remove_card(self):
         card = self.table_cards.pop()
-        if len(self.table_cards)>0:
+        if len(self.table_cards) > 0:
             self.table_cards[len(self.table_cards)-1].set_front_showing()
         return card
     
     """
     Devuelve una lista de cartas que están debajo de la carta pasada como parámetro.
     """
-    def get_cards_below(self,card):
+    def get_cards_below(self, card):
         fill = False
         cards_below = []
         for table_card in self.table_cards:

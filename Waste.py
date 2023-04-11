@@ -22,10 +22,14 @@ class Waste:
     def empty(self):                    # Vacía la pila de residuo NO visible esta vacía.
         self.waste_pile.clear()
         self.set_cards()
-
+        
+    def show_is_empty(self):
+        return len(self.show_pile) == 0
+        
     def get_top_card(self):             # Verifica si la pila de residuo esta vacía, si no lo esta, devuelve la última carta de la pila.
         if len(self.waste_pile) > 0:
             return self.waste_pile[len(self.waste_pile)-1]
+
 
     """
     Este método establece las coordenadas de las cartas de la pila de residuo visible.
