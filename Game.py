@@ -452,31 +452,15 @@ go_to_waste = 0
 def auto_solve():
     
     global moves, game_is_running, go_to_waste
+    
+    print(len(deck.get_deck()))
 
     moved = False
     for table in tables:
         card = table.bottom_card()
         if card is not None:
             moved = bottom_card_foundation(card, table, moved)
-            print("PORQUE MIERDA NO ENTRA ACA PRIMERO")
             if not moved:
-                print("PORQUE MIERDA NO ENTRA ACA SEGUNDO")
-                """
-                Hay una falla de logica..
-                
-                La poronga esta tiene que ser así:
-                
-                Agarrar una carta,
-                    1. Ver si puede ponerla en el foundation,
-                    2. Ver si puede ponerla en alguna de las tables
-                    3. Ver si puede poner la upper card en alguna de las tables
-                    4. Ver si hay una carta en el waste
-                    5. Si hay, intentar ponerla.
-                    6. Si no hay, sacar una del mazo.
-                    7. Intentar ponerla.
-                    8. Si la pudo poner, volver a empezar.
-                    9. Si no la pudo poner, sacar otra carta del mazo.
-                """
                 moved = bottom_card_table(card, table, moved)
                 if not moved:
                     cards = table.get_showing_cards(table.get_table())
@@ -484,43 +468,39 @@ def auto_solve():
                         moved = upper_card_table(cards, table, moved)
         
                 
-                if not moved and len(deck.get_deck()) > 0 or len(waste.get_waste_pile()) > 0:
-                    if not moved and not waste.show_is_empty():
-                        moved = check_waste_card(moved)
-                        print(moved)
-                        if moved:
-                            break
-                        
-                    if not moved and len(deck.get_deck()) > 0:
-                        waste.add_card(deck.remove_card())
-                        moves += 1
-                        moved = True
-                        time.sleep(0.4)
-                        break
-                    
-                    if not moved and len(deck.get_deck()) <= 0:
-                        deck.add_cards(list(reversed(waste.get_waste_pile().copy())))
-                        moves += 1 
-                        moved = True
-                        go_to_waste += 1
-                        print(go_to_waste)
-                        time.sleep(0.4)
-                        break
-                    
-                    if moved:
-                        break
-        if moved:
-            break
+    if not moved and len(deck.get_deck()) > 0 or len(waste.get_waste_pile()) > 0:
+        if not moved and not waste.show_is_empty():
+            moved = check_waste_card(moved)
+    
+    if not moved and len(deck.get_deck()) <= 0:
+        deck.add_cards(list(reversed(waste.get_waste_pile().copy())))
+        waste.empty()
+        moves += 1 
+        go_to_waste += 1
+        
+    if not moved and len(deck.get_deck()) > 0:
+        waste.add_card(deck.remove_card())
+        moves += 1
+        
 
-    if go_to_waste >= 6:
-        x = messagebox.askquestion(message="¿Do you want to play again?", title="You lose :(")
-        if x == 'yes':
-            pygame.quit()
-            game_loop()
-            # Ver como concha hacer para resetear el juego.
-        else:
-            pygame.quit()
-            quit()
+        # print(go_to_waste)
+
+    # if go_to_waste >= 6:
+    #     x = messagebox.askquestion(message="¿Do you want to play again?", title="You lose :(")
+    #     if x == 'yes':
+    #         pygame.quit()
+    #         game_loop()
+    #         # Ver como concha hacer para resetear el juego.
+    #     else:
+    #         pygame.quit()
+    #         quit()
+    
+    # for table in tables:
+    #     for card in table.get_table():
+    #         print(card.get_value(), card.get_color(), card.get_suit())
+    #     print("------------------------------")
+    
+    pygame.display.update()
 
             
 def check_waste_card(moved):
@@ -542,7 +522,7 @@ def bottom_card_foundation(card, table, moved):
                 table.remove_card()
                 moved = True
                 moves += 1
-                time.sleep(0.4)
+                # time.sleep(0.4)
                 break
             else:
                 foundation_card = foundation.get_top_card()
@@ -552,7 +532,7 @@ def bottom_card_foundation(card, table, moved):
                         table.remove_card()
                         moved = True
                         moves += 1
-                        time.sleep(0.4)
+                        # time.sleep(0.4)
                         break
     return moved
 
@@ -566,7 +546,7 @@ def waste_card_foundation(waste_card, moved):
                     waste.remove_card()
                     moved = True
                     moves += 1
-                    time.sleep(0.4)
+                    # time.sleep(0.4)
                     break
                 else:
                     foundation_card = foundation.get_top_card()
@@ -576,7 +556,7 @@ def waste_card_foundation(waste_card, moved):
                             waste.remove_card()
                             moved = True
                             moves += 1
-                            time.sleep(0.4)
+                            # time.sleep(0.4)
                             break
     return moved
 
@@ -594,13 +574,13 @@ def bottom_card_table(card, table, moved):
                             table.remove_card()
                             moved = True
                             moves += 1
-                            time.sleep(0.4)
+                            # time.sleep(0.4)
                     else:
                         dest_table.add_new_card(card)
                         table.remove_card()
                         moved = True
                         moves += 1
-                        time.sleep(0.4)
+                        # time.sleep(0.4)
                     
             else:
                 if dest_card.get_color() != card.get_color():
@@ -612,7 +592,7 @@ def bottom_card_table(card, table, moved):
                                 table.remove_card()
                                 moved = True
                                 moves += 1
-                                time.sleep(0.4)
+                                # time.sleep(0.4)
                                 break
 
     return moved
@@ -629,7 +609,7 @@ def waste_card_table(card, moved):
                     waste.remove_card()
                     moved = True
                     moves += 1
-                    time.sleep(0.4)
+                    # time.sleep(0.4)
                     break
         else:
             if card.get_value() == 13:
@@ -637,7 +617,7 @@ def waste_card_table(card, moved):
                 waste.remove_card()
                 moved = True
                 moves += 1
-                time.sleep(0.4)
+                # time.sleep(0.4)
     return moved
 
 def upper_card_table(cards, table, moved):
@@ -656,7 +636,7 @@ def upper_card_table(cards, table, moved):
                         cards[0].clear()
                         moved = True
                         moves += 1
-                        time.sleep(0.4)
+                        # time.sleep(0.4)
                         break
 
             if dest_card is not None:
@@ -667,7 +647,7 @@ def upper_card_table(cards, table, moved):
                             table.remove_card()
                         moved = True
                         moves += 1
-                        time.sleep(0.4)
+                        # time.sleep(0.4)
                         break
     return moved
 
