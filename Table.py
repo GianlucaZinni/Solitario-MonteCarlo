@@ -1,6 +1,7 @@
 """
 La clase Table tiene el constructor de la clase que recibe
 """
+import time
 class Table:
 
     def __init__(self, x, deck, card_amount):
@@ -61,8 +62,8 @@ class Table:
         if len(self.table_cards)>0:
             return self.table_cards[len(self.table_cards)-1]
         
-    def prev_card(self):                  # Verifica si la pila de cartas de la tabla esta vacía, si no lo está, devuelve la última carta de la pila.
-        if len(self.table_cards)>0:
+    def prev_card(self):                  # Verifica si la pila de cartas de la tabla esta vacía, si no lo está, devuelve la anteúltima carta de la pila.
+        if len(self.table_cards) > 0:
             return self.table_cards[len(self.table_cards)-2]
         
     def obtain_next_card(self, card_num):
@@ -85,6 +86,7 @@ class Table:
     """
     def remove_card(self):
         card = self.table_cards.pop()
+        time.sleep(0.5)
         if len(self.table_cards) > 0:
             self.table_cards[len(self.table_cards)-1].set_front_showing()
         return card
@@ -101,6 +103,16 @@ class Table:
             if fill:
                 cards_below.append(table_card)
         return cards_below
+    
+    def get_showing_cards(self, table_cards):
+        cards = []
+        for card in table_cards:
+            if card.is_front_showing():
+                cards.append(card)
+        if cards == table_cards: 
+            return [cards, True]
+        else:
+            return [cards, False]
 
     """
     Establece las coordenadas de todas las cartas de la pila.

@@ -33,7 +33,7 @@ http://byronknoll.blogspot.com/2011/03/vector-playing-cards.html"""
 # Se crea la instancia del objeto *Deck()*
 deck = Deck()
 # Se utiliza la función que mezcla el mazo.
-# deck.shuffle()
+deck.shuffle()
 
 # Se crea la instancia del objeto *Waste()*
 waste = Waste()
@@ -354,6 +354,39 @@ def create_foundations():
     """Se retornan todas las *foundations*"""
     return foundations
 
+"""
+Se crean las dos listas del juego, *tables* y *foundations*
+
+La lista *tables* se crea llamando a la función *create_tables()*, la cual crea siete objetos 
+de la clase *Table* con diferentes cantidades de cartas en cada mesa y los agrega a la lista *tables*. 
+Cada mesa está separada por un espacio horizontal de 125 píxeles.
+
+La lista *foundations* se crea llamando a la función *create_foundations()*, 
+la cual crea cuatro objetos de la clase *Foundation* para cada uno de los palos de la baraja
+(corazones, diamantes, picas y tréboles) y los agrega a la lista *foundations*. 
+Cada foundation está separada por unespacio horizontal de 125 píxeles.
+"""
+tables = create_tables()
+foundations = create_foundations()
+
+
+"""Esta función muestra un mensaje de texto en la pantalla del juego. 
+Toma dos parámetros: el primer parámetro es el texto que se mostrará en la pantalla
+y el segundo parámetro es la posición en la que se mostrará el texto.
+
+Se utiliza para mostrar en pantalla el puntaje, movimientos y tiempo.
+
+La función primero carga la fuente de texto desde un archivo ttf y luego crea una superficie
+de texto con el tamaño y color de fuente deseado. A continuación, se establece la posición del
+rectángulo que contiene el texto y se centra en la posición proporcionada como parámetro. 
+Finalmente, el texto se dibuja en la pantalla en la posición del rectángulo."""
+def message_display(text, cords):
+    large_text = pygame.font.Font('D:/My Drive/Universidad/CUARTO AÑO/Modelos y Simulación/Método de Montecarlo/Montecarlo/Solitario-Montecarlo/assets/freesansbold.ttf',17)
+    text_surface = large_text.render(text, True, (255,255,255))
+    TextSurf, TextRect = text_surface, text_surface.get_rect()
+    TextRect.center = cords
+    screen.blit(TextSurf, TextRect)
+
 """Función que verifica constantemente que cada Foundation tenga 13 cartas, si se cumple la condición, se ganó el juego.
 (La idea es que te permita decidir si jugar de nuevo o no)."""
 def check_win():
@@ -394,10 +427,8 @@ def check_autowin():
         for table in tables:
             card = table.bottom_card()
             if card is not None:
-                print(card.get_value(), card.get_suit())
                 coords = card.get_coordinates()
                 for foundation in foundations:
-                    time.sleep(0.1)
                     if foundation.get_suit() == card.get_suit():
                         foundation_card = foundation.get_top_card()
                         if foundation_card != None:
@@ -416,241 +447,229 @@ def check_autowin():
                                 place_sound.play()
                                 moves += 1
                                 continue
-
+                            
+go_to_waste = 0
 def auto_solve():
     
-    global moves, game_is_running
+    global moves, game_is_running, go_to_waste
+
     moved = False
-    
-    time.sleep(0.5)
-    
     for table in tables:
         card = table.bottom_card()
         if card is not None:
-            print("enter foundation")
-            for foundation in foundations:
-                if foundation.get_suit() == card.get_suit():
-                    foundation_card = foundation.get_top_card()
-                    if foundation_card != None:
-                        if foundation_card.get_value() + 1 == card.get_value():
-                            foundation.add_card(card)
-                            table.remove_card()
-                            moved = True
-                            moves += 1
-                            break
-                    else:
-                        if card.get_value() == 1:
-                            foundation.add_card(card)
-                            table.remove_card()
-                            moved = True
-                            moves += 1
-                            break
-    
-    if not moved:
-        for table in tables:
-            
-            card = table.bottom_card()
-            if card is not None:
+            moved = bottom_card_foundation(card, table, moved)
+            print("PORQUE MIERDA NO ENTRA ACA PRIMERO")
+            if not moved:
+                print("PORQUE MIERDA NO ENTRA ACA SEGUNDO")
+                """
+                Hay una falla de logica..
                 
-                # print("carta: ", card.get_value(), card.get_suit())
-                search_cards = table.get_cards_below(card)
-                print(search_cards)
-                cards =  card.is_last_showing(search_cards)
+                La poronga esta tiene que ser así:
                 
-                print(cards)
-
-                if cards[0].is_front_showing():
-                    if cards[0].get_value() == 13:
-                        for dest_table in tables:
-                            dest_table_card = dest_table.bottom_card()
-                            if dest_table_card is None:
-                                dest_table.add_cards(cards)
-                                for card in cards:
-                                    table.remove_card()
-                                    moved = True
-                                    moves += 1
-                                    break
-                                
-                    for dest_table in tables:
-                        if dest_table != table:
-                            dest_card = dest_table.bottom_card()
-                            if dest_card is not None:
-                                if dest_card.get_color() != cards[0].get_color():
-                                    prev_card = table.prev_card()
-                                    if prev_card is not None:
-                                        if dest_card.get_value() == prev_card.get_value():
-                                            break
-                                    if dest_card.get_value() - 1 == cards[0].get_value():
-                                        dest_table.add_cards(cards)
-                                        for card in cards:
-                                            table.remove_card()
-                                            moved = True
-                                            moves += 1
-                                            break
-                                        
-    if not moved and not waste.show_is_empty():
-        waste_card = waste.get_top_card()
+                Agarrar una carta,
+                    1. Ver si puede ponerla en el foundation,
+                    2. Ver si puede ponerla en alguna de las tables
+                    3. Ver si puede poner la upper card en alguna de las tables
+                    4. Ver si hay una carta en el waste
+                    5. Si hay, intentar ponerla.
+                    6. Si no hay, sacar una del mazo.
+                    7. Intentar ponerla.
+                    8. Si la pudo poner, volver a empezar.
+                    9. Si no la pudo poner, sacar otra carta del mazo.
+                """
+                moved = bottom_card_table(card, table, moved)
+                if not moved:
+                    cards = table.get_showing_cards(table.get_table())
+                    if len(cards[0]) > 1:
+                        moved = upper_card_table(cards, table, moved)
         
-        if waste_card is not None:
-            print("enter waste table")
-            if waste_card.get_value() == 13:
-                for table in tables:
-                    dest_table = table.bottom_card()
-                    if dest_table is None:
-                        table.add_new_card(waste_card)
-                        waste.remove_card()
+                
+                if not moved and len(deck.get_deck()) > 0 or len(waste.get_waste_pile()) > 0:
+                    if not moved and not waste.show_is_empty():
+                        moved = check_waste_card(moved)
+                        print(moved)
+                        if moved:
+                            break
+                        
+                    if not moved and len(deck.get_deck()) > 0:
+                        waste.add_card(deck.remove_card())
+                        moves += 1
+                        moved = True
+                        time.sleep(0.4)
+                        break
+                    
+                    if not moved and len(deck.get_deck()) <= 0:
+                        deck.add_cards(list(reversed(waste.get_waste_pile().copy())))
+                        moves += 1 
+                        moved = True
+                        go_to_waste += 1
+                        print(go_to_waste)
+                        time.sleep(0.4)
+                        break
+                    
+                    if moved:
+                        break
+        if moved:
+            break
+
+    if go_to_waste >= 6:
+        x = messagebox.askquestion(message="¿Do you want to play again?", title="You lose :(")
+        if x == 'yes':
+            pygame.quit()
+            game_loop()
+            # Ver como concha hacer para resetear el juego.
+        else:
+            pygame.quit()
+            quit()
+
+            
+def check_waste_card(moved):
+    global moves
+    
+    waste_card = waste.get_top_card()
+    if waste_card is not None:
+        moved = waste_card_foundation(waste_card, moved)
+        if not moved:
+            moved = waste_card_table(waste_card, moved)
+    return moved
+
+def bottom_card_foundation(card, table, moved):
+    global moves
+    for foundation in foundations:
+        if foundation.get_suit() == card.get_suit():
+            if card.get_value() == 1:
+                foundation.add_card(card)
+                table.remove_card()
+                moved = True
+                moves += 1
+                time.sleep(0.4)
+                break
+            else:
+                foundation_card = foundation.get_top_card()
+                if foundation_card is not None:
+                    if foundation_card.get_value() + 1 == card.get_value():
+                        foundation.add_card(card)
+                        table.remove_card()
                         moved = True
                         moves += 1
+                        time.sleep(0.4)
                         break
+    return moved
+
+def waste_card_foundation(waste_card, moved):
+    global moves
+    for foundation in foundations:
+        if waste_card is not None:
+            if foundation.get_suit() == waste_card.get_suit():
+                if waste_card.get_value() == 1:
+                    foundation.add_card(waste_card)
+                    waste.remove_card()
+                    moved = True
+                    moves += 1
+                    time.sleep(0.4)
+                    break
+                else:
+                    foundation_card = foundation.get_top_card()
+                    if foundation_card is not None:
+                        if foundation_card.get_value() + 1 == waste_card.get_value():
+                            foundation.add_card(waste_card)
+                            waste.remove_card()
+                            moved = True
+                            moves += 1
+                            time.sleep(0.4)
+                            break
+    return moved
+
+def bottom_card_table(card, table, moved):
+    global moves
+    for dest_table in tables:
+        if dest_table != table:
+            dest_card = dest_table.bottom_card()
+            if dest_card is None:
+                if card.get_value() == 13:
+                    prev_card = table.prev_card()
+                    if prev_card is not None:
+                        if not prev_card.is_front_showing():
+                            dest_table.add_new_card(card)
+                            table.remove_card()
+                            moved = True
+                            moves += 1
+                            time.sleep(0.4)
+                    else:
+                        dest_table.add_new_card(card)
+                        table.remove_card()
+                        moved = True
+                        moves += 1
+                        time.sleep(0.4)
+                    
             else:
-                print("enter waste foundation")
-                for foundation in foundations:
-                    if foundation.get_suit() == waste_card.get_suit():
-                        foundation_card = foundation.get_top_card()
-                        if foundation_card is not None:
-                            if foundation_card.get_value() + 1 == waste_card.get_value():
-                                    foundation.add_card(waste_card)
-                                    waste.remove_card()
-                                    moved = True
-                                    moves += 1
-                                    break
-                        else:
-                            if waste_card.get_value() == 1:
-                                foundation.add_card(waste_card)
-                                waste.remove_card()
+                if dest_card.get_color() != card.get_color():
+                    if dest_card.get_value() - 1 == card.get_value():
+                        prev_card = table.prev_card()
+                        if prev_card is not None:
+                            if not prev_card.is_front_showing():
+                                dest_table.add_new_card(card)
+                                table.remove_card()
                                 moved = True
                                 moves += 1
+                                time.sleep(0.4)
                                 break
-                if not moved:
-                    for table in tables:
-                        dest_table_card = table.bottom_card()
-                        if dest_table_card is not None:
-                            if dest_table_card.get_color() != waste_card.get_color():
-                                if dest_table_card.get_value() - 1 == waste_card.get_value():
-                                    table.add_new_card(waste_card)
-                                    waste.remove_card()
-                                    moved = True
-                                    moves += 1
-                                    break
-                                    
-    if not moved and len(deck.get_deck()) > 0:
-        waste.add_card(deck.remove_card())
-        waste_card = waste.get_top_card()
-        moves += 1
-        
-    if not moved and len(deck.get_deck()) <= 0:
-        deck.add_cards(list(reversed(waste.get_waste_pile().copy())))
-        waste.empty()
-        shuffle_sound.play()
-        
-        # """
-        # Este código visita cada última carta de cada tabla y verifica si puede colocarla en alguna otra tabla.
-        # Infinitamente.
-        # """
-        # count = 0
-        # for table in tables:
-        #     count += 1
-        #     card = table.bottom_card()
-        #     if card is not None:
-        #         for dest_table in tables:
-        #             if table != dest_table:
-        #                 dest_card = dest_table.bottom_card()
-        #                 if dest_card is not None:
-        #                     if dest_card.get_color() != card.get_color():
-        #                         if dest_card.get_value() - 1 == card.get_value():
-        #                             dest_table.add_new_card(card)
-        #                             table.remove_card()
-        #                             place_sound.play()
-        #                             moved = True
-        #                             break
-        #     time.sleep(1)
-    if moves > 150:
-        game_is_running = False
-        
-    pygame.display.update()
 
-def check_waste_card():
+    return moved
+
+def waste_card_table(card, moved):
+    global moves
     
-    moved = False
-    
-    if not moved and not waste.show_is_empty():
-        waste_card = waste.get_top_card()
-        
-        if waste_card is not None:
-            if waste_card.get_value() == 13:
-                for table in tables:
-                    dest_table = table.bottom_card()
-                    if dest_table is None:
-                        table.add_new_card(waste_card)
-                        waste.remove_card()
+    for dest_table in tables:
+        dest_card = dest_table.bottom_card()
+        if dest_card is not None:
+            if dest_card.get_color() != card.get_color():
+                if dest_card.get_value() - 1 == card.get_value():
+                    dest_table.add_new_card(card)
+                    waste.remove_card()
+                    moved = True
+                    moves += 1
+                    time.sleep(0.4)
+                    break
+        else:
+            if card.get_value() == 13:
+                dest_table.add_new_card(card)
+                waste.remove_card()
+                moved = True
+                moves += 1
+                time.sleep(0.4)
+    return moved
+
+def upper_card_table(cards, table, moved):
+    global moves
+    for dest_table in tables:
+        if dest_table != table:
+            dest_card = dest_table.bottom_card()
+            if dest_card is None:
+                if cards[0][0].get_value() == 13:
+                    if cards[1] == True:
+                        return
+                    else:
+                        dest_table.add_cards(cards[0])
+                        for card in cards[0]:
+                            table.remove_card()
+                        cards[0].clear()
+                        moved = True
+                        moves += 1
+                        time.sleep(0.4)
                         break
-            else:
-                for foundation in foundations:
-                    if foundation.get_suit() == waste_card.get_suit():
-                        foundation_card = foundation.get_top_card()
-                        if foundation_card is not None:
-                            if foundation_card.get_value() + 1 == waste_card.get_value():
-                                    foundation.add_card(waste_card)
-                                    waste.remove_card()
-                                    moved = True
-                                    break
-                        else:
-                            if waste_card.get_value() == 1:
-                                foundation.add_card(waste_card)
-                                waste.remove_card()
-                                moved = True
-                                break
-                if not moved:
-                    for table in tables:
-                        dest_table_card = table.bottom_card()
-                        if dest_table_card is not None:
-                            if dest_table_card.get_color() != waste_card.get_color():
-                                if dest_table_card.get_value() - 1 == waste_card.get_value():
-                                    table.add_new_card(waste_card)
-                                    waste.remove_card()
-                                    moved = True
-                                    break
-                                
-    if not moved and len(deck.get_deck()) > 0:
-        waste.add_card(deck.remove_card())
-        waste_card = waste.get_top_card()
-        
-    if not moved and len(deck.get_deck()) <= 0:
-        deck.add_cards(list(reversed(waste.get_waste_pile().copy())))
-        waste.empty()
 
-"""
-Se crean las dos listas del juego, *tables* y *foundations*
-
-La lista *tables* se crea llamando a la función *create_tables()*, la cual crea siete objetos 
-de la clase *Table* con diferentes cantidades de cartas en cada mesa y los agrega a la lista *tables*. 
-Cada mesa está separada por un espacio horizontal de 125 píxeles.
-
-La lista *foundations* se crea llamando a la función *create_foundations()*, 
-la cual crea cuatro objetos de la clase *Foundation* para cada uno de los palos de la baraja
-(corazones, diamantes, picas y tréboles) y los agrega a la lista *foundations*. 
-Cada foundation está separada por unespacio horizontal de 125 píxeles.
-"""
-tables = create_tables()
-foundations = create_foundations()
-
-
-"""Esta función muestra un mensaje de texto en la pantalla del juego. 
-Toma dos parámetros: el primer parámetro es el texto que se mostrará en la pantalla
-y el segundo parámetro es la posición en la que se mostrará el texto.
-
-Se utiliza para mostrar en pantalla el puntaje, movimientos y tiempo.
-
-La función primero carga la fuente de texto desde un archivo ttf y luego crea una superficie
-de texto con el tamaño y color de fuente deseado. A continuación, se establece la posición del
-rectángulo que contiene el texto y se centra en la posición proporcionada como parámetro. 
-Finalmente, el texto se dibuja en la pantalla en la posición del rectángulo."""
-def message_display(text, cords):
-    large_text = pygame.font.Font('D:/My Drive/Universidad/CUARTO AÑO/Modelos y Simulación/Método de Montecarlo/Montecarlo/Solitario-Montecarlo/assets/freesansbold.ttf',17)
-    text_surface = large_text.render(text, True, (255,255,255))
-    TextSurf, TextRect = text_surface, text_surface.get_rect()
-    TextRect.center = cords
-    screen.blit(TextSurf, TextRect)
+            if dest_card is not None:
+                if dest_card.get_color() != cards[0][0].get_color():
+                    if dest_card.get_value() - 1 == cards[0][0].get_value():
+                        dest_table.add_cards(cards[0])
+                        for card in cards[0]:
+                            table.remove_card()
+                        moved = True
+                        moves += 1
+                        time.sleep(0.4)
+                        break
+    return moved
 
 """Esta función es el núcleo del juego, en el que se ejecuta todo el código principal."""
 def game_loop():
@@ -731,11 +750,11 @@ def game_loop():
         pygame.display.update()
         
         """FUnción que limita la velocidad del juego a 60 fotogramas por segundo."""
-        clock.tick(120)
+        clock.tick(240)
         
         auto_solve()
         #check_waste_card()
-            
+
         check_win()
         check_autowin()
 
