@@ -450,14 +450,14 @@ def message_display(text, cords):
 
 """Esta función es el núcleo del juego, en el que se ejecuta todo el código principal."""
 def game_loop():
-    
+    start_time = time.time()
     """Se declara la variable global *holding_cards* (puede ser accedida y modificada desde cualquier lugar del programa). 
     *holding_cards* es una lista de objetos de carta que se están sujetando"""
     global holding_cards
     
     """Se establece un bucle *while* que se ejecutará mientras la variable *game_is_running* = True, esta variable controla si el jeugo está en ejecución o no, y es declarada por defecto como True."""
     while game_is_running:
-        
+        timer = int(time.time() - start_time)
         """En esta línea se obtiene la posición del cursor en la ventana del juego y se guarda en dos variables, *mouse_x* y *mouse_y*."""
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
