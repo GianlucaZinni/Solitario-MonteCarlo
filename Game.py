@@ -24,7 +24,7 @@ pygame.display.set_caption("Solitario")
 game_is_running = True
 
 """Finalmente se guarda en la variable backgroundImage se utiliza la función *pygame.image.load()* para cargar la imagen del fondo del juego."""
-backgroundImage = pygame.image.load("D:/My Drive/Universidad/CUARTO AÑO/Modelos y Simulación/Método de Montecarlo/Montecarlo/Solitario-Montecarlo/assets/backgroundd.jpg")
+backgroundImage = pygame.image.load("assets/backgroundd.jpg")
 
 """Link de donde obtuvimos los gráficos de las cartas utilizadas.
 http://byronknoll.blogspot.com/2011/03/vector-playing-cards.html"""
@@ -52,8 +52,8 @@ timer = 0                  # Contador de tiempo.
 La función *pygame.mixer.sound()* se utiliza para cargar el archivo de sonido en la variable correspondiente.
 Luego se reproduce el sonido al barajar als cartas utiliando la función *play()*"""
 
-place_sound = pygame.mixer.Sound('D:/My Drive/Universidad/CUARTO AÑO/Modelos y Simulación/Método de Montecarlo/Montecarlo/Solitario-Montecarlo/assets/flip.wav')
-shuffle_sound = pygame.mixer.Sound('D:/My Drive/Universidad/CUARTO AÑO/Modelos y Simulación/Método de Montecarlo/Montecarlo/Solitario-Montecarlo/assets/shuffle.wav')
+place_sound = pygame.mixer.Sound('assets/flip.wav')
+shuffle_sound = pygame.mixer.Sound('assets/shuffle.wav')
 shuffle_sound.play()
 
 """Función que comprueba si el usuario hizo click en el mazo de residuo no visible.
@@ -442,7 +442,7 @@ de texto con el tamaño y color de fuente deseado. A continuación, se establece
 rectángulo que contiene el texto y se centra en la posición proporcionada como parámetro. 
 Finalmente, el texto se dibuja en la pantalla en la posición del rectángulo."""
 def message_display(text, cords):
-    large_text = pygame.font.Font('D:/My Drive/Universidad/CUARTO AÑO/Modelos y Simulación/Método de Montecarlo/Montecarlo/Solitario-Montecarlo/assets/freesansbold.ttf',17)
+    large_text = pygame.font.Font('assets/freesansbold.ttf',17)
     text_surface = large_text.render(text, True, (255,255,255))
     TextSurf, TextRect = text_surface, text_surface.get_rect()
     TextRect.center = cords
