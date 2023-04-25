@@ -7,7 +7,7 @@ class Deck:
     def __init__(self):
         
         # La función pygame.image.load() establece una imagen en la ventana, en este caso las cartas del mazo tienen todas el mismo revés.
-        self.back_image = pygame.image.load("D:/My Drive/Universidad/CUARTO AÑO/Modelos y Simulación/Método de Montecarlo/Montecarlo/Solitario-Montecarlo/assets/PlayingCards/back.png")
+        self.back_image = pygame.image.load("assets/PlayingCards/back.png")
         
         """
         La función pygame.transform.scale toma la imagen y una tupla que representa el 
@@ -25,7 +25,7 @@ class Deck:
         """
         for suit in ["hearts", "spades", "diamonds", "clubs"]:
             for value in range(1,14):
-                image = "D:/My Drive/Universidad/CUARTO AÑO/Modelos y Simulación/Método de Montecarlo/Montecarlo/Solitario-Montecarlo/assets/PlayingCards/"+str(value)+"_of_"+suit+".png"
+                image = "assets/PlayingCards/"+str(value)+"_of_"+suit+".png"
                 self.deck.append(Card(suit, value, image, self.back_image))
                 
     def get_deck(self):             # función que retorna el mazo.
