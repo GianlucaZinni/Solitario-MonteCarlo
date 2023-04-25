@@ -448,6 +448,333 @@ def message_display(text, cords):
     TextRect.center = cords
     screen.blit(TextSurf, TextRect)
 
+
+"""Función que verifica constantemente que cada Foundation tenga 13 cartas, si se cumple la condición, se ganó el juego.
+(La idea es que te permita decidir si jugar de nuevo o no)."""
+def check_win():
+    count = 0
+    for foundation in foundations:
+        complete_pile = foundation.get_Foundation()
+        if len(complete_pile) != 13:
+            return
+        else:
+            count += 1
+    print("check_win:", count)
+    if count == 4:
+        
+        count += 1
+        x = messagebox.askquestion(message="¿Do you want to play again?", title="You win the game!")
+        if x == 'yes':
+            pygame.quit()
+            game_loop()
+            # Ver como concha hacer para resetear el juego.
+    
+        else:
+            pygame.quit()
+            quit()
+
+
+def check_autowin():
+    count = 0
+    global moves, tables
+    for table in tables:
+        card = table.bottom_card()
+        all_cards = len(table.get_table())
+        card_count = 0
+        for card in table.get_table():
+            if card.is_front_showing():
+                card_count += 1
+        if all_cards == card_count:
+            count += 1
+    if count == 7:
+        for table in tables:
+            card = table.bottom_card()
+            if card is not None:
+                coords = card.get_coordinates()
+                for foundation in foundations:
+                    if foundation.get_suit() == card.get_suit():
+                        foundation_card = foundation.get_top_card()
+                        if foundation_card != None:
+                            if foundation_card.get_value() + 1 == card.get_value():
+                                card_follow_mouse(coords[0], coords[1])
+                                foundation.add_card(card)
+                                table.remove_card()
+                                place_sound.play()
+                                moves += 1
+                                continue
+                        else:
+                            if card.get_value() == 1:
+                                card_follow_mouse(coords[0], coords[1])
+                                foundation.add_card(card)
+                                table.remove_card()
+                                place_sound.play()
+                                moves += 1
+                                continue
+                            
+
+"""Algoritmo: El marino
+
+El marino es un señor algoritmo que se encarga de tocar todo lo que puede hasta fenecer o ganar.
+
+Funcionamiento:
+
+    Para cada table de entre todas las tables:
+        Agarra la última carta de la table
+            Si la carta existe:
+                Intenta colocarla en algún foundation.
+                    Si no se pudo: 
+                        Intenta colocarla en una table distinta.
+                        Si no pudo:
+                            Intenta colocar la carta más alta visible de la table actual en una table distinta.
+        Si no se movió:
+            Agarra una carta del mazo VISIBLE.
+            Si la carta existe:
+                Intenta colocarla en algún foundation.
+                    Si no se pudo: 
+                        Intenta colocarla en una table distinta.
+                        
+        Si no se movió y el mazo NO VISIBLE esta vacío:
+            rellena el mazo NO VISIBLE con TODAS las cartas del mazo VISIBLE.
+            vacía el mazo VISIBLE.
+        
+        Si no se movió y el mazo VISIBLE no esta vacío:
+            Saca una carta del mazo
+    
+    Mientras tanto rellena una lista *check_if_lock = []*
+    
+    Si pudo colocar una carta al foundation o a la table: 
+        agrega un True a la lista
+        
+    Si no pudo mover ninguna carta y agarró una carta del mazo NO VISIBLE o se quedo sin cartas en el mazo NO VISIBLE y lo relleno de nuevo:
+        agrega un False a la lista
+        
+    En el caso de que los últimos 24 elementos de la lista *check_if_lock = []* sean FALSE:
+        Perdiste el juego.
+
+            (Esto significa que intento todos los movimientos antes mencionados y no logró ningun cambio, por ende,
+            no es capaz de mover cartas de la table o del mazo a ningún foundation o table, lo que significa que se perdió el juego).
+        
+"""
+
+check_if_lock = []
+
+def auto_solve():
+    
+    global moves, game_is_running, check_if_lock
+    
+    """Se declara la variable *moved* que determinará si el algoritmo movió una carta, si moved = True, la función se reinicia."""
+    moved = False
+    
+    """Se declara la variable *check_if_moved* que se almacenará en la lista *check_if_lock = []*"""
+    check_if_moved = True
+    
+    """Bucle que revisa todas las table entre las 7 tables"""
+    for table in tables:
+        
+        """Obtiene la última carta de la table seleccionada."""
+        card = table.bottom_card()
+        if card is not None:
+            """Función que revisa si puede mover la carta seleccionada a algun foundation."""
+            moved = bottom_card_foundation(card, table, moved)
+            if not moved:
+                """Función que revisa si puede mover la carta seleccionada a otra table."""
+                moved = bottom_card_table(card, table, moved)
+                if not moved:
+                    """Función que obtiene una lista de todas las cartas visibles de la table."""
+                    cards = table.get_showing_cards(table.get_table())
+                    if len(cards[0]) > 1:
+                        """Función que revisa si puede mover la carta más alta visible de la table seleccionada, a otra table."""
+                        moved = upper_card_table(cards, table, moved)
+    
+    """Si aún no se movió ninguna carta y alguno de los mazos de residuos aún tienen cartas."""
+    if not moved and len(deck.get_deck()) > 0 or len(waste.get_waste_pile()) > 0:
+        """Si el mazo VISIBLE tiene cartas."""
+        if not waste.show_is_empty():
+            """Función que ingresa a las condiciones para mover una carta del mazo."""
+            moved = check_waste_card(moved)
+    
+    """Si aún no se movió ninguna carta y el mazo NO VISIBLE esta vacío, rellenar el mazo NO VISIBLE con las cartas del mazo VISIBLE"""
+    if not moved and len(deck.get_deck()) <= 0:
+        deck.add_cards(list(reversed(waste.get_waste_pile().copy())))
+        waste.empty()
+        moves += 1
+        check_if_moved = False
+    
+    """Si aún no se movió ninguna carta y el mazo VISIBLE tiene cartas, sacar una carta del mazo NO VISIBLE."""
+    if not moved and len(deck.get_deck()) > 0:
+        waste.add_card(deck.remove_card())
+        moves += 1
+        check_if_moved = False
+    
+    """En este bloque de código se observan los últimos 24 movimientos de la partida (las mismas cartas que hay default en el mazo), si el algoritmo
+    solo intentó sacar cartas del mazo NO VISIBLE en los últimos 24 movimientos, significa que no puede mover ninguna carta más y perdió la partida."""
+    check_if_lock.append(check_if_moved)
+    last_twentyfour = check_if_lock[-24:]
+    if True not in last_twentyfour:
+        x = messagebox.askquestion(message="¿Do you want to play again?", title="You lose >:(")
+        if x == 'yes':
+            pygame.quit()
+            game_loop()
+            # Ver como concha hacer para resetear el juego.
+        else:
+            pygame.quit()
+            quit()
+        
+    """Refresca la pantalla."""
+    pygame.display.update()
+
+            
+def check_waste_card(moved):
+    global moves
+    
+    """Obtiene la carta visible del mazo VISIBLE."""
+    waste_card = waste.get_top_card()
+    if waste_card is not None:
+        """Función que revisa si puede mover la carta seleccionada a algun foundation."""
+        moved = waste_card_foundation(waste_card, moved)
+        if not moved:
+            """Función que revisa si puede mover la carta seleccionada a alguna table."""
+            moved = waste_card_table(waste_card, moved)
+    return moved
+
+def bottom_card_foundation(card, table, moved):
+    global moves
+    for foundation in foundations:
+        if foundation.get_suit() == card.get_suit():
+            if card.get_value() == 1:
+                foundation.add_card(card)
+                table.remove_card()
+                moved = True
+                moves += 1
+                time.sleep(0.2)
+                break
+            else:
+                foundation_card = foundation.get_top_card()
+                if foundation_card is not None:
+                    if foundation_card.get_value() + 1 == card.get_value():
+                        foundation.add_card(card)
+                        table.remove_card()
+                        moved = True
+                        moves += 1
+                        time.sleep(0.2)
+                        break
+    return moved
+
+def waste_card_foundation(waste_card, moved):
+    global moves
+    for foundation in foundations:
+        if waste_card is not None:
+            if foundation.get_suit() == waste_card.get_suit():
+                if waste_card.get_value() == 1:
+                    foundation.add_card(waste_card)
+                    waste.remove_card()
+                    moved = True
+                    moves += 1
+                    time.sleep(0.2)
+                    break
+                else:
+                    foundation_card = foundation.get_top_card()
+                    if foundation_card is not None:
+                        if foundation_card.get_value() + 1 == waste_card.get_value():
+                            foundation.add_card(waste_card)
+                            waste.remove_card()
+                            moved = True
+                            moves += 1
+                            time.sleep(0.2)
+                            break
+    return moved
+
+def bottom_card_table(card, table, moved):
+    global moves
+    for dest_table in tables:
+        if dest_table != table:
+            dest_card = dest_table.bottom_card()
+            if dest_card is None:
+                if card.get_value() == 13:
+                    prev_card = table.prev_card()
+                    if prev_card is not None:
+                        if not prev_card.is_front_showing():
+                            dest_table.add_new_card(card)
+                            table.remove_card()
+                            moved = True
+                            moves += 1
+                            time.sleep(0.2)
+                    else:
+                        dest_table.add_new_card(card)
+                        table.remove_card()
+                        moved = True
+                        moves += 1
+                        time.sleep(0.2)
+                    
+            else:
+                if dest_card.get_color() != card.get_color():
+                    if dest_card.get_value() - 1 == card.get_value():
+                        prev_card = table.prev_card()
+                        if prev_card is not None:
+                            if not prev_card.is_front_showing():
+                                dest_table.add_new_card(card)
+                                table.remove_card()
+                                moved = True
+                                moves += 1
+                                time.sleep(0.2)
+                                break
+
+    return moved
+
+def waste_card_table(card, moved):
+    global moves
+    
+    for dest_table in tables:
+        dest_card = dest_table.bottom_card()
+        if dest_card is not None:
+            if dest_card.get_color() != card.get_color():
+                if dest_card.get_value() - 1 == card.get_value():
+                    dest_table.add_new_card(card)
+                    waste.remove_card()
+                    moved = True
+                    moves += 1
+                    time.sleep(0.2)
+                    break
+        else:
+            if card.get_value() == 13:
+                dest_table.add_new_card(card)
+                waste.remove_card()
+                moved = True
+                moves += 1
+                time.sleep(0.2)
+    return moved
+
+def upper_card_table(cards, table, moved):
+    global moves
+    for dest_table in tables:
+        if dest_table != table:
+            dest_card = dest_table.bottom_card()
+            if dest_card is None:
+                if cards[0][0].get_value() == 13:
+                    if cards[1] == True:
+                        return
+                    else:
+                        dest_table.add_cards(cards[0])
+                        for card in cards[0]:
+                            table.remove_card()
+                        cards[0].clear()
+                        moved = True
+                        moves += 1
+                        time.sleep(0.2)
+                        break
+
+            if dest_card is not None:
+                if dest_card.get_color() != cards[0][0].get_color():
+                    if dest_card.get_value() - 1 == cards[0][0].get_value():
+                        dest_table.add_cards(cards[0])
+                        for card in cards[0]:
+                            table.remove_card()
+                        moved = True
+                        moves += 1
+                        time.sleep(0.2)
+                        break
+    return moved
+
 """Esta función es el núcleo del juego, en el que se ejecuta todo el código principal."""
 def game_loop():
     start_time = time.time()
@@ -529,7 +856,6 @@ def game_loop():
         """FUnción que limita la velocidad del juego a 60 fotogramas por segundo."""
         clock.tick(60)
         
-        check_win()
-        check_autowin()
+        auto_solve()
 
 game_loop()
