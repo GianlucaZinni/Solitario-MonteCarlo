@@ -1,4 +1,4 @@
-import pygame
+import pygame, time
 
 class Waste:
 
@@ -17,15 +17,21 @@ class Waste:
         self.set_cards()
 
     def remove_card(self):              # Remueve la última carta de la pila de residuo NO visible.
-        return self.waste_pile.pop()
+        card = self.waste_pile.pop()
+        time.sleep(0.5)
+        return card
 
     def empty(self):                    # Vacía la pila de residuo NO visible esta vacía.
         self.waste_pile.clear()
         self.set_cards()
-
+        
+    def show_is_empty(self):
+        return len(self.show_pile) == 0
+        
     def get_top_card(self):             # Verifica si la pila de residuo esta vacía, si no lo esta, devuelve la última carta de la pila.
         if len(self.waste_pile) > 0:
             return self.waste_pile[len(self.waste_pile)-1]
+
 
     """
     Este método establece las coordenadas de las cartas de la pila de residuo visible.

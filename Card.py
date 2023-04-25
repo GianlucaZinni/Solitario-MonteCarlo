@@ -42,7 +42,18 @@ class Card(pygame.sprite.Sprite):
         self.image = self.front_image
 
     def is_front_showing(self):         # Retorna true si la carta esta de frente, o false si esta del revés.
-        return self.image == self.front_image
+        if self.image == self.front_image:
+            return True
+        return False
+    
+    def is_last_showing(self, cards):
+        new_cards = []
+        for card in cards:
+            if not card.is_front_showing():
+                continue
+            else:
+                new_cards.append(card)
+        return new_cards
 
     def get_color(self):                # Retorna el color del palo. (Para averiguar si es posible su colocación por debajo de otra carta que tenga distinto color)
         if self.suit=="spades" or self.suit=="clubs":

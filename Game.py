@@ -32,7 +32,7 @@ http://byronknoll.blogspot.com/2011/03/vector-playing-cards.html"""
 # Se crea la instancia del objeto *Deck()*
 deck = Deck()
 # Se utiliza la función que mezcla el mazo.
-# deck.shuffle()
+deck.shuffle()
 
 # Se crea la instancia del objeto *Waste()*
 waste = Waste()
@@ -370,7 +370,7 @@ def check_win():
         if x == 'yes':
             pygame.quit()
             game_loop()
-            # Ver como concha hacer para resetear el juego.
+            # Ver como hacer para resetear el juego.
     
         else:
             pygame.quit()
