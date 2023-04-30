@@ -1,11 +1,18 @@
 import threading
-import Game
+from Game import Game
 import concurrent.futures
 import random
 import time
 
+def jugar_partida(n):
+    print(f"Iniciando partida {n}")
+    game = Game()
+    game.game_loop()
+    print(f"Partida {n} finalizada")
+    return n
+
 def main():
-    num_tareas = 10
+    num_tareas = 1
     resultados = []
 
     # Lock de protección ante concurrencia
@@ -14,7 +21,7 @@ def main():
     # Utiliza un ThreadPoolExecutor para manejar los hilos de manera eficiente
     with concurrent.futures.ThreadPoolExecutor() as executor:
         # Iniciar todas las tareas y guardar los objetos Future
-        futures = [executor.submit(Game, i) for i in range(num_tareas)]
+        futures = [executor.submit(jugar_partida, i) for i in range(num_tareas)]
 
         # Esperar a que las tareas se completen y recolectar los resultados
         for future in concurrent.futures.as_completed(futures):
