@@ -352,68 +352,6 @@ def create_foundations():
     """Se retornan todas las *foundations*"""
     return foundations
 
-"""Función que verifica constantemente que cada Foundation tenga 13 cartas, si se cumple la condición, se ganó el juego.
-(La idea es que te permita decidir si jugar de nuevo o no)."""
-def check_win():
-    count = 0
-    for foundation in foundations:
-        complete_pile = foundation.get_Foundation()
-        if len(complete_pile) != 13:
-            return
-        else:
-            count += 1
-    print("check_win:", count)
-    if count == 4:
-        
-        count += 1
-        x = messagebox.askquestion(message="¿Do you want to play again?", title="You win the game!")
-        if x == 'yes':
-            pygame.quit()
-            game_loop()
-            # Ver como hacer para resetear el juego.
-    
-        else:
-            pygame.quit()
-            quit()
-            
-def check_autowin():
-    count = 0
-    global moves, tables
-    for table in tables:
-        card = table.bottom_card()
-        all_cards = len(table.get_table())
-        card_count = 0
-        for card in table.get_table():
-            if card.is_front_showing():
-                card_count += 1
-        if all_cards == card_count:
-            count += 1
-    if count == 7:
-        for table in tables:
-            card = table.bottom_card()
-            if card is not None:
-                print(card.get_value(), card.get_suit())
-                coords = card.get_coordinates()
-                for foundation in foundations:
-                    time.sleep(0.05)
-                    if foundation.get_suit() == card.get_suit():
-                        foundation_card = foundation.get_top_card()
-                        if foundation_card != None:
-                            if foundation_card.get_value() + 1 == card.get_value():
-                                card_follow_mouse(coords[0], coords[1])
-                                foundation.add_card(card)
-                                table.remove_card()
-                                place_sound.play()
-                                moves += 1
-                                continue
-                        else:
-                            if card.get_value() == 1:
-                                card_follow_mouse(coords[0], coords[1])
-                                foundation.add_card(card)
-                                table.remove_card()
-                                place_sound.play()
-                                moves += 1
-                                continue
 
 """
 Se crean las dos listas del juego, *tables* y *foundations*
@@ -473,7 +411,6 @@ def check_win():
             pygame.quit()
             quit()
 
-
 def check_autowin():
     count = 0
     global moves, tables
@@ -509,8 +446,7 @@ def check_autowin():
                                 table.remove_card()
                                 place_sound.play()
                                 moves += 1
-                                continue
-                            
+                                continue                 
 
 """Algoritmo: El marino
 
@@ -553,12 +489,11 @@ Funcionamiento:
 
             (Esto significa que intento todos los movimientos antes mencionados y no logró ningun cambio, por ende,
             no es capaz de mover cartas de la table o del mazo a ningún foundation o table, lo que significa que se perdió el juego).
-        
 """
 
 check_if_lock = []
 
-def auto_solve():
+def auto_solve(): # El marino
     
     global moves, game_is_running, check_if_lock
     
@@ -611,14 +546,8 @@ def auto_solve():
     check_if_lock.append(check_if_moved)
     last_twentyfour = check_if_lock[-24:]
     if True not in last_twentyfour:
-        x = messagebox.askquestion(message="¿Do you want to play again?", title="You lose >:(")
-        if x == 'yes':
-            pygame.quit()
-            game_loop()
-            # Ver como concha hacer para resetear el juego.
-        else:
-            pygame.quit()
-            quit()
+        x = messagebox.INFO("Game Over")
+        quit()
         
     """Refresca la pantalla."""
     pygame.display.update()
@@ -857,5 +786,4 @@ def game_loop():
         clock.tick(60)
         
         auto_solve()
-
 game_loop()
