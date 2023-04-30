@@ -546,7 +546,7 @@ def auto_solve(): # El marino
     check_if_lock.append(check_if_moved)
     last_twentyfour = check_if_lock[-24:]
     if True not in last_twentyfour:
-        x = messagebox.INFO("Game Over")
+        print("Game Over")
         quit()
         
     """Refresca la pantalla."""
