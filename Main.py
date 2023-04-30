@@ -1,3 +1,4 @@
+import threading
 import Game
 import concurrent.futures
 import random
@@ -7,6 +8,9 @@ def main():
     num_tareas = 10
     resultados = []
 
+    # Lock de protección ante concurrencia
+    lockResultados = threading.Lock()
+
     # Utiliza un ThreadPoolExecutor para manejar los hilos de manera eficiente
     with concurrent.futures.ThreadPoolExecutor() as executor:
         # Iniciar todas las tareas y guardar los objetos Future
@@ -15,6 +19,12 @@ def main():
         # Esperar a que las tareas se completen y recolectar los resultados
         for future in concurrent.futures.as_completed(futures):
             try:
+
+                """ 
+                    PENDIENTE: (CBI)
+                        Usar lock, editar var_glob resultados; DB...
+                """
+
                 print(f"La tarea {future} fue completada")
             except Exception as e:
                 print(f"Error en la tarea: {e}")
