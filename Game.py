@@ -385,6 +385,32 @@ def message_display(text, cords):
     TextRect.center = cords
     screen.blit(TextSurf, TextRect)
 
+
+"""Función que verifica constantemente que cada Foundation tenga 13 cartas, si se cumple la condición, se ganó el juego.
+(La idea es que te permita decidir si jugar de nuevo o no)."""
+def check_win():
+    count = 0
+    for foundation in foundations:
+        complete_pile = foundation.get_Foundation()
+        if len(complete_pile) != 13:
+            return
+        else:
+            count += 1
+    print("check_win:", count)
+    if count == 4:
+        
+        count += 1
+        x = messagebox.askquestion(message="¿Do you want to play again?", title="You win the game!")
+        if x == 'yes':
+            pygame.quit()
+            game_loop()
+            # Ver como concha hacer para resetear el juego.
+    
+        else:
+            pygame.quit()
+            quit()
+
+
 """Algoritmo: El marino
 
 El marino es un señor algoritmo que se encarga de tocar todo lo que puede hasta fenecer o ganar.
@@ -426,12 +452,11 @@ Funcionamiento:
 
             (Esto significa que intento todos los movimientos antes mencionados y no logró ningun cambio, por ende,
             no es capaz de mover cartas de la table o del mazo a ningún foundation o table, lo que significa que se perdió el juego).
-        
 """
 
 check_if_lock = []
 
-def auto_solve():
+def auto_solve(): # El marino
     
     global moves, game_is_running, check_if_lock
     
@@ -484,14 +509,8 @@ def auto_solve():
     check_if_lock.append(check_if_moved)
     last_twentyfour = check_if_lock[-24:]
     if True not in last_twentyfour:
-        x = messagebox.askquestion(message="¿Do you want to play again?", title="You lose >:(")
-        if x == 'yes':
-            pygame.quit()
-            game_loop()
-            # Ver como concha hacer para resetear el juego.
-        else:
-            pygame.quit()
-            quit()
+        print("Game Over")
+        quit()
         
     """Refresca la pantalla."""
     pygame.display.update()
@@ -731,5 +750,4 @@ def game_loop():
         clock.tick(60)
         
         auto_solve()
-
 game_loop()
