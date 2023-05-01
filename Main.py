@@ -1,4 +1,5 @@
 import threading
+from DB import MySQLConnection
 from Game import Game
 import concurrent.futures
 import random
@@ -35,8 +36,25 @@ def main():
                 print(f"La tarea {future} fue completada")
             except Exception as e:
                 print(f"Error en la partida: {e}")
-
     print(f"Se completaron {len(resultados)} tareas.")
+    
+    db_config = {       # Config de DB MySQL
+        'host': 'tu_host',
+        'user': 'tu_usuario',
+        'password': 'tu_contraseña',
+        'database': 'nombre_base_de_datos'
+    }
+
+    with MySQLConnection(**db_config) as cnx:
+        cursor = cnx.cursor()
+
+        query = "SELECT * FROM nombre_tabla"    # Query a realizar
+        cursor.execute(query)                   # Ejecucion de Query
+
+        for row in cursor:
+            print(row)
+
+        cursor.close()
 
 if __name__ == "__main__":
     main()
