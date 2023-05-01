@@ -1,3 +1,4 @@
+from concurrent.futures import as_completed
 import threading
 from Game import Game
 import concurrent.futures
@@ -9,7 +10,8 @@ def jugar_partida(n):
     game = Game()
     game.game_loop()
     print(f"Partida {n} finalizada")
-    return n
+    return (game.moves, game.score)
+
 
 def main():
     num_tareas = 1
@@ -21,20 +23,19 @@ def main():
     # Utiliza un ThreadPoolExecutor para manejar los hilos de manera eficiente
     with concurrent.futures.ThreadPoolExecutor() as executor:
         # Iniciar todas las tareas y guardar los objetos Future
-        futures = [executor.submit(jugar_partida, i) for i in range(num_tareas)]
+        futures = [executor.submit(jugar_partida(i)) for i in range(num_tareas)]
 
         # Esperar a que las tareas se completen y recolectar los resultados
-        for future in concurrent.futures.as_completed(futures):
-            try:
+        for future in as_completed(futures):
+                
+            """ 
+                PENDIENTE: (CBI)
+                    Usar lock, editar var_glob resultados; DB...
+            """
+            num_movidas = future.result()
+            print("RESULT (n of moves): ", num_movidas)
+            print(f"La tarea {future} fue completada")
 
-                """ 
-                    PENDIENTE: (CBI)
-                        Usar lock, editar var_glob resultados; DB...
-                """
-
-                print(f"La tarea {future} fue completada")
-            except Exception as e:
-                print(f"Error en la tarea: {e}")
 
     print(f"Se completaron {len(resultados)} tareas.")
 
