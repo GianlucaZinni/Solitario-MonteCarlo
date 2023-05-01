@@ -12,7 +12,7 @@ def jugar_partida(n):
     return n
 
 def main():
-    num_tareas = 1000
+    num_tareas = 1
     resultados = []
 
     # Lock de protección ante concurrencia

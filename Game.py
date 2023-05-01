@@ -365,7 +365,7 @@ class Game:
         text_surface = large_text.render(text, True, (255,255,255))
         TextSurf, TextRect = text_surface, text_surface.get_rect()
         TextRect.center = cords
-        self.moves.blit(TextSurf, TextRect)
+        self.screen.blit(TextSurf, TextRect)
 
 
     """Función que verifica constantemente que cada Foundation tenga 13 cartas, si se cumple la condición, se ganó el juego.
