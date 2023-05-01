@@ -335,7 +335,7 @@ class Game:
     """Función crea y devuelve una lista de objetos *Foundation*
     La Foundation son las áreas del juego donde se construyen las cartas de cada palo en orden ascendente.
     """
-    def create_foundations():
+    def create_foundations(self):
         """Se define una lista vacía de foundations para almacenar los Objetos Foundation.
         Se establece la coordenada x para situar las cartas de la primera Foundation.
         Se define una lista con los cuatro palos de la baraja para establecer el palo de la Foundation."""

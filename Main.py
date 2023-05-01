@@ -34,7 +34,7 @@ def main():
 
                 print(f"La tarea {future} fue completada")
             except Exception as e:
-                print(f"Error en la tarea: {e}")
+                print(f"Error en la partida: {e}")
 
     print(f"Se completaron {len(resultados)} tareas.")
 
