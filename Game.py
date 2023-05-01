@@ -384,13 +384,14 @@ class Game:
             count += 1
             x = messagebox.askquestion(message="¿Do you want to play again?", title="You win the game!")
             if x == 'yes':
-                pygame.quit()
-                self.game_loop()
+                self.endGame()
+                return self.moves
+                #self.game_loop()
                 # Ver como hacer para resetear el juego.
             else:
-                pygame.quit()
-                quit()
-
+                self.endGame()
+                return self.moves
+ 
 
     """Algoritmo: El marino
 
@@ -486,8 +487,9 @@ class Game:
         last_twentyfour = self.check_if_lock[-24:]
         if True not in last_twentyfour:
             print("Game Over")
-            quit()
-            
+            self.endGame()
+            return self.moves
+           
         """Refresca la pantalla."""
         pygame.display.update()
 
@@ -511,7 +513,7 @@ class Game:
                     table.remove_card()
                     moved = True
                     self.moves += 1
-                    time.sleep(0.2)
+                    time.sleep(0.01)
                     break
                 else:
                     foundation_card = foundation.get_top_card()
@@ -521,7 +523,7 @@ class Game:
                             table.remove_card()
                             moved = True
                             self.moves += 1
-                            time.sleep(0.2)
+                            time.sleep(0.01)
                             break
         return moved
 
@@ -534,7 +536,7 @@ class Game:
                         self.waste.remove_card()
                         moved = True
                         self.moves += 1
-                        time.sleep(0.2)
+                        time.sleep(0.01)
                         break
                     else:
                         foundation_card = foundation.get_top_card()
@@ -544,7 +546,7 @@ class Game:
                                 self.waste.remove_card()
                                 moved = True
                                 self.moves += 1
-                                time.sleep(0.2)
+                                time.sleep(0.01)
                                 break
         return moved
 
@@ -561,13 +563,13 @@ class Game:
                                 table.remove_card()
                                 moved = True
                                 self.moves += 1
-                                time.sleep(0.2)
+                                time.sleep(0.01)
                         else:
                             dest_table.add_new_card(card)
                             table.remove_card()
                             moved = True
                             self.moves += 1
-                            time.sleep(0.2)
+                            time.sleep(0.01)
                         
                 else:
                     if dest_card.get_color() != card.get_color():
@@ -579,7 +581,7 @@ class Game:
                                     table.remove_card()
                                     moved = True
                                     self.moves += 1
-                                    time.sleep(0.2)
+                                    time.sleep(0.01)
                                     break
 
         return moved
@@ -594,7 +596,7 @@ class Game:
                         self.waste.remove_card()
                         moved = True
                         self.moves += 1
-                        time.sleep(0.2)
+                        time.sleep(0.01)
                         break
             else:
                 if card.get_value() == 13:
@@ -603,7 +605,7 @@ class Game:
                     self.waste.remove_card()
                     moved = True
                     self.moves += 1
-                    time.sleep(0.2)
+                    time.sleep(0.01)
         return moved
 
     def upper_card_table(self, cards, table, moved):
@@ -621,7 +623,7 @@ class Game:
                             cards[0].clear()
                             moved = True
                             self.moves += 1
-                            time.sleep(0.2)
+                            time.sleep(0.01)
                             break
 
                 if dest_card is not None:
@@ -632,7 +634,7 @@ class Game:
                                 table.remove_card()
                             moved = True
                             self.moves += 1
-                            time.sleep(0.2)
+                            time.sleep(0.01)
                             break
         return moved
 
@@ -669,8 +671,8 @@ class Game:
                 Si es así, se llama a la función pygame.quit() para salir de Pygame y se llama a quit() para salir del programa por completo.
                 """
                 if event.type==pygame.QUIT:
-                    pygame.quit()
-                    quit()
+                    self.endGame()
+                    return self.moves
 
             """En esta línea se dibuja la imagen de fondo en la ventana del juego. self.self.backgroundImage es una imagen cargada anteriormente. (detrás de todo)"""
             self.screen.blit(self.backgroundImage, (0, 0))
