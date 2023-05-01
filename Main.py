@@ -12,14 +12,14 @@ def jugar_partida(n):
     return n
 
 def main():
-    num_tareas = 1
+    num_tareas = 1000
     resultados = []
 
     # Lock de protección ante concurrencia
     lockResultados = threading.Lock()
 
     # Utiliza un ThreadPoolExecutor para manejar los hilos de manera eficiente
-    with concurrent.futures.ThreadPoolExecutor() as executor:
+    with concurrent.futures.ProcessPoolExecutor() as executor:
         # Iniciar todas las tareas y guardar los objetos Future
         futures = [executor.submit(jugar_partida, i) for i in range(num_tareas)]
 

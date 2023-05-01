@@ -60,7 +60,6 @@ class Game:
         self.tables = self.create_tables()
         self.foundations = self.create_foundations()
         self.check_if_lock = []
-        self.game_loop()
 
     """Función que comprueba si el usuario hizo click en el mazo de residuo no visible.
     Si lo ha hecho, se comprueba si el mazo está vacío. Si lo está, las cartas de la pila de residuo visible se devuelven a la pila de residuo no visible y se barajan. 
@@ -336,7 +335,7 @@ class Game:
     """Función crea y devuelve una lista de objetos *Foundation*
     La Foundation son las áreas del juego donde se construyen las cartas de cada palo en orden ascendente.
     """
-    def create_foundations():
+    def create_foundations(self):
         """Se define una lista vacía de foundations para almacenar los Objetos Foundation.
         Se establece la coordenada x para situar las cartas de la primera Foundation.
         Se define una lista con los cuatro palos de la baraja para establecer el palo de la Foundation."""
@@ -366,7 +365,7 @@ class Game:
         text_surface = large_text.render(text, True, (255,255,255))
         TextSurf, TextRect = text_surface, text_surface.get_rect()
         TextRect.center = cords
-        self.moves.blit(TextSurf, TextRect)
+        self.screen.blit(TextSurf, TextRect)
 
 
     """Función que verifica constantemente que cada Foundation tenga 13 cartas, si se cumple la condición, se ganó el juego.
