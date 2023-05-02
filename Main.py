@@ -7,15 +7,15 @@ import time
 import json
 import os
 
-def jugar_partida(n):
+def play_game(n):
     print(f"Iniciando partida {n}")
     game = Game()
-    game.game_loop()
+    results = game.game_loop()
     print(f"Partida {n} finalizada")
-    return n
+    return results
 
 # Funcion que permite configurar la DB con los datos de dbConfig.json
-def cargar_configuracion(config_file):
+def load_config(config_file):
     with open(config_file, 'r') as f:
         config = json.load(f)
     return config
@@ -29,7 +29,7 @@ def insert_results(db_config, results):
             cnx.commit()
 
 def main():
-    num_tareas = 1000
+    task_quantity = 1000
     results = []
 
     # Lock de protección ante concurrencia
@@ -37,7 +37,7 @@ def main():
 
     # Utiliza un ThreadPoolExecutor para manejar los hilos de manera eficiente
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = [executor.submit(jugar_partida, i) for i in range(num_tareas)]
+        futures = [executor.submit(play_game, i) for i in range(task_quantity)]
         for future in concurrent.futures.as_completed(futures):
             try:
                 resultado = future.result()
@@ -50,12 +50,12 @@ def main():
     print(f"Se completaron {len(results)} tareas.")
     
     # Inicializaacion DB
-    config = cargar_configuracion('dbConfig.json')
+    config = load_config('dbConfig.json')
     db_config = {
-        'host': os.environ.get('DB_HOST', 'localhost'),
-        'user': os.environ.get('DB_USER', 'root'),
-        'password': os.environ.get('DB_PASSWORD', ''),
-        'database': os.environ.get('DB_DATABASE', 'mi_base_de_datos')
+        'host': config.get('DB_HOST', 'localhost'),
+        'user': config.get('DB_USER', 'root'),
+        'password': config.get('DB_PASSWORD', ''),
+        'database': config.get('DB_DATABASE', 'mi_base_de_datos')
     }
     # Ejecucion de funcion que inserta los 1000 resultados en la DB
     insert_results(db_config, results)
