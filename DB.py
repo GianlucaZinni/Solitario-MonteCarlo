@@ -1,5 +1,4 @@
 import mysql.connector
-
 class MySQLConnection:
     def __init__(self, host, user, password, database):
         self.host = host
