@@ -5,15 +5,15 @@
 
 1-[Descripción del Proyecto](#Descripción-del-Proyecto) 
 
-A-[Objetivo del proyecto](#Objetivo-del-proyecto) 
+    A-[Objetivo del proyecto](#Objetivo-del-proyecto) 
 
-B-[Marco teórico](#Marco-teórico) 
+    B-[Marco teórico](#Marco-teórico) 
 
-I-[Aplicación del método de montecarlo](#Aplicación-del-método-de-montecarlo) 
+      I-[Aplicación del método de montecarlo](#Aplicación-del-método-de-montecarlo) 
 
-II-[Aplicación de asignatura de sistemas concurrentes](#Aplicación-de-asignatura-de-sistemas-concurrentes)
+      II-[Aplicación de asignatura de sistemas concurrentes](#Aplicación-de-asignatura-de-sistemas-concurrentes)
 
-C-[El juego:El solitario](#El-juego-El-solitario) 
+    C-[El juego:El solitario](#El-juego-El-solitario) 
 
 2- [Estado del proyecto](#Estado-del-proyecto)
 
