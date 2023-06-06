@@ -32,9 +32,7 @@
 
 #### Aplicación de asignatura de sistemas concurrentes
 <p align="justify">
-  El concepto de concurrencia se refiere a dos o más eventos que ocurren simultáneamente y está relacionado con el estudio de las interacciones que se producen durante las actividades concurrentes. Un hilo o "thread" es la unidad mínima de un programa que puede ser gestionada individualmente por el Scheduler. El objetivo de utilizar hilos es que cada uno tenga tareas específicas para cumplir, compartiendo recursos y trabajando en sincronía con los demás. La aplicación de este conocimiento a
-
- nuestro juego nos permitirá ejecutar múltiples partidas al mismo tiempo, obteniendo resultados más rápidos para nuestras estadísticas.
+  El concepto de concurrencia se refiere a dos o más eventos que ocurren simultáneamente y está relacionado con el estudio de las interacciones que se producen durante las actividades concurrentes. Un hilo o "thread" es la unidad mínima de un programa que puede ser gestionada individualmente por el Scheduler. El objetivo de utilizar hilos es que cada uno tenga tareas específicas para cumplir, compartiendo recursos y trabajando en sincronía con los demás. La aplicación de este conocimiento a nuestro juego nos permitirá ejecutar múltiples partidas al mismo tiempo, obteniendo resultados más rápidos para nuestras estadísticas.
 </p>
 
 ### El juego: El Solitario
@@ -81,6 +79,4 @@ Para el desarrollo de este proyecto se han utilizado las siguientes tecnologías
 - Sofía Alejandra Prieto
 - Gianluca Zinni
 
-Este proyecto se realiza bajo la guía y supervisión de los profesionales Claudio Marcelo
-
- Menal y Mariano Cosentino.
+Este proyecto se realiza bajo la guía y supervisión de los profesionales Claudio Marcelo Menal y Mariano Cosentino.
