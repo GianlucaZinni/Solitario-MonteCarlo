@@ -1,10 +1,7 @@
 import multiprocessing
 from DB import MySQLConnection
 from Game import Game
-import random
-import time
-import json
-import os
+import sys
 
 def play_game(n):
     print(f"Iniciando partida {n}")
@@ -22,7 +19,7 @@ def insert_results(db_config, results):
             cnx.commit()
 
 def main():
-    task_quantity = 2
+    task_quantity = 1
     results = []
 
     with multiprocessing.Pool(processes=task_quantity) as pool:
@@ -40,3 +37,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    sys.exit()

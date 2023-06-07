@@ -1,4 +1,4 @@
-import pygame, time
+import time
 
 class Waste:
 
