@@ -61,9 +61,11 @@
 ## Acceso al proyecto
 1. Para clonar el repositorio, ejecutar el siguiente comando en la terminal, en la carpeta donde se desea descargar el proyecto:
 - `git clone https://github.com/GianlucaZinni/Solitario-MonteCarlo.git`
-2. Instalar las dependencias del proyecto con el siguiente comando:
+2. Se debera crear la base de datos en MySQL con el siguiente codigo:
+- `CreateSQL.sql`
+3. Instalar las dependencias del proyecto con el siguiente comando:
 - `pip install -r requirements.txt`
-3. Para ejecutar el programa, correr el siguiente comando:
+4. Para ejecutar el programa, correr el siguiente comando:
 - `python main.py`
 
 ## Tecnologías utilizadas
