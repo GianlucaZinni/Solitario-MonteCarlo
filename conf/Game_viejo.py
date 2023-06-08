@@ -1,8 +1,8 @@
 import pygame
-from Deck import Deck
-from Waste import Waste
-from Foundation import Foundation
-from Table import Table
+from game_config.Deck import Deck
+from game_config.Waste import Waste
+from game_config.Foundation import Foundation
+from game_config.Table import Table
 from pygame.locals import RESIZABLE
 from tkinter import messagebox
 import time
@@ -11,14 +11,20 @@ class Game:
     def __init__(self):
 
         pygame.init()
-        info = pygame.display.Info()
-        self.window_size = (info.current_w, info.current_h)
+
+        self.window_size = (900, 885)
+
         self.screen = pygame.display.set_mode(self.window_size, RESIZABLE)
+
         pygame.display.set_caption("Solitario")
+
         self.game_is_running = True
-        self.backgroundImage = pygame.image.load("assets/backgroundd.jpg")
+
+        self.backgroundImage = pygame.image.load("static/assets/backgroundd.jpg")
+
 
         self.deck = Deck()
+
         self.deck.shuffle()
 
         self.waste = Waste()
@@ -32,8 +38,8 @@ class Game:
         self.frame = 0
         self.timer = 0
 
-        self.place_sound = pygame.mixer.Sound('assets/flip.wav')
-        self.shuffle_sound = pygame.mixer.Sound('assets/shuffle.wav')
+        self.place_sound = pygame.mixer.Sound('/static/assets/flip.wav')
+        self.shuffle_sound = pygame.mixer.Sound('/static/assets/shuffle.wav')
         self.shuffle_sound.play()
 
         self.tables = self.create_tables()
@@ -218,7 +224,7 @@ class Game:
         return foundations
 
     def message_display(self, text, cords):
-        large_text = pygame.font.Font('assets/freesansbold.ttf',17)
+        large_text = pygame.font.Font('/static/assets/Roboto-Bold.ttf',17)
         text_surface = large_text.render(text, True, (255,255,255))
         TextSurf, TextRect = text_surface, text_surface.get_rect()
         TextRect.center = cords

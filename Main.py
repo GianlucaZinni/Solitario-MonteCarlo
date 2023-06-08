@@ -1,6 +1,6 @@
 import multiprocessing
-from DB import MySQLConnection
-from Game import Game
+from static.Database import MySQLConnection
+from conf.Game import Game
 import sys
 
 def play_game(n):

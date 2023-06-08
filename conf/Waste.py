@@ -6,7 +6,7 @@ class Waste:
         self.waste_pile = []            # Pila de residuo NO visible  (Cartas que no estan en el tablero)
         self.show_pile = []             # Pila de residuo visible
         self.y = 68                     # Coordenadas de la iamgen de las cartas en el eje y.
-        self.x = [175, 200, 225]        # Coordenadas de la imagen de las cartas en el eje x, desapiladas del mazo, 1ra, 2da, 3ra
+        self.x = [150, 175, 200]        # Coordenadas de la imagen de las cartas en el eje x, desapiladas del mazo, 1ra, 2da, 3ra
 
     def get_waste_pile(self):           # Retorna la pila de residuo NO visible.
         return self.waste_pile

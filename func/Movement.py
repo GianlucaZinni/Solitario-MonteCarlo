@@ -193,9 +193,9 @@ class BasicMoves:
     def check_waste_card(self, game, moved):
         waste_card = game.waste.get_top_card()
         if waste_card is not None:
-            moved = game.waste_card_foundation(waste_card, moved)
+            moved = self.waste_card_foundation(game, waste_card, moved)
             if not moved:
-                moved = game.waste_card_table(waste_card, moved)
+                moved = self.waste_card_table(game, waste_card, moved)
         return moved
 
     def bottom_card_foundation(self, game, card, table, moved):

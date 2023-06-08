@@ -1,12 +1,11 @@
 import pygame, time, sys
-from Deck import Deck
-from Waste import Waste
-from Foundation import Foundation
-from Table import Table
+from conf.Deck import Deck
+from conf.Waste import Waste
+from conf.Foundation import Foundation
+from conf.Table import Table
 from pygame.locals import RESIZABLE
-from tkinter import messagebox
-from Movement import BasicMoves
-from Strategies.ElMarino import ElMarino
+from func.Movement import BasicMoves
+from func.Strategies import ElMarino
 
 
 class Game:
@@ -16,7 +15,7 @@ class Game:
 
         self.window_size = (900, 885)
         self.screen = pygame.display.set_mode(self.window_size, RESIZABLE)
-        self.backgroundImage = pygame.image.load("assets/backgroundd.jpg")
+        self.backgroundImage = pygame.image.load("static/assets/layout/backgroundd.jpg")
 
         self.game_is_running = True
 
@@ -32,15 +31,16 @@ class Game:
         self.moves = 0
         self.timer = 0
 
-        self.place_sound = pygame.mixer.Sound("assets/flip.wav")
-        self.shuffle_sound = pygame.mixer.Sound("assets/shuffle.wav")
+        self.place_sound = pygame.mixer.Sound("static/assets/sounds/flip.wav")
+        self.shuffle_sound = pygame.mixer.Sound("static/assets/sounds/shuffle.wav")
         self.shuffle_sound.play()
 
         self.tables = self.create_tables()
         self.foundations = self.create_foundations()
         self.check_if_lock = []
         
-        self.result = None
+        self.result_counter = 0
+        self.finish = False
 
     def create_tables(self):
         tables = []
@@ -62,7 +62,7 @@ class Game:
         return foundations
 
     def message_display(self, text, cords):
-        large_text = pygame.font.Font("assets/freesansbold.ttf", 17)
+        large_text = pygame.font.Font("static/assets/fonts/Roboto-Bold.ttf", 17)
         text_surface = large_text.render(text, True, (255, 255, 255))
         TextSurf, TextRect = text_surface, text_surface.get_rect()
         TextRect.center = cords
@@ -120,4 +120,38 @@ class Game:
 
             self.clock.tick(120)
             elmarino.UnderTaker(self, moves)
-            
+            self.game_result()
+            if self.finish:
+                quit()
+
+    def game_result(self):
+        if self.result_counter == 4:
+            results = {
+                "idGames": 1,
+                "victoria": True,
+                "duracion": self.timer,
+                "movimientos": self.moves,
+                "idEstrategia": {"id": 1, "nombre": "El Marino", "descripcion": "desc"}
+            }
+            self.finish=True
+            print(results)
+            return results
+        
+        elif self.result_counter == 5:
+            results = {
+                "idGames": 1,
+                "victoria": False,
+                "duracion": self.timer,
+                "movimientos": self.moves,
+                "idEstrategia": {"id": 1, "nombre": "El Marino", "descripcion": "desc"}
+            }
+            self.finish=True
+            print(results)
+            return results
+        
+        for foundation in self.foundations:
+            complete_pile = foundation.get_Foundation()
+            if len(complete_pile) != 13:
+                return
+            else:
+                self.result_counter += 1

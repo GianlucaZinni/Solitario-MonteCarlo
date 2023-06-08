@@ -1,5 +1,3 @@
-import time, pygame
-
 class ElMarino:
 
     def UnderTaker(self, game, moves):
@@ -37,9 +35,8 @@ class ElMarino:
         game.check_if_lock.append(check_if_moved)
         last_twentyfour = game.check_if_lock[-24:]
         if True not in last_twentyfour:
-            print("Game Over")
-            quit()
-            
-        pygame.display.update()
-        
+            game.result_counter = 5
+            return
 
+class LaSocialista:
+    pass

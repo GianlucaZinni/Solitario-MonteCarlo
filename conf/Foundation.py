@@ -1,6 +1,3 @@
-import pygame
-
-# 
 class Foundation:
 
     def __init__(self, x, suit):
@@ -39,3 +36,10 @@ class Foundation:
     """
     def set_cards(self):
         self.Foundation_pile[len(self.Foundation_pile)-1].set_coordinates(self.x, self.y)
+        
+        
+    def is_complete(self):
+        if len(self.Foundation_pile) == 13:
+            return all(card.rank == str(i) for i, card in enumerate(self.Foundation_pile, start=1))
+        else:
+            return False
