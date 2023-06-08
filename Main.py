@@ -1,6 +1,7 @@
 import multiprocessing
 from DB import MySQLConnection
 from Game import Game
+import sys
 
 def play_game(n):
     print(f"Iniciando partida {n}")
@@ -10,12 +11,12 @@ def play_game(n):
     return results
 
 # Utilizacion de la base de datos para insertar miles de resultados a la vez
-def insert_results(db_config, results):
-    with MySQLConnection() as cnx:
-        with cnx.cursor() as cursor:
-            insert_query = "INSERT INTO games (victoria, duracion, idEstrategia) VALUES (%s, %s, %s)"
-            cursor.executemany(insert_query, [(result.win, result.duration, result.idEstrategia) for result in results])
-            cnx.commit()
+# def insert_results(db_config, results):
+#     with MySQLConnection() as cnx:
+#         with cnx.cursor() as cursor:
+#             insert_query = "INSERT INTO games (victoria, duracion, idEstrategia) VALUES (%s, %s, %s)"
+#             cursor.executemany(insert_query, [(result.win, result.duration, result.idEstrategia) for result in results])
+#             cnx.commit()
 
 def main():
     task_quantity = 1
@@ -33,7 +34,8 @@ def main():
                 print(f"Error en la partida: {e}")
     print(f"Se completaron {len(results)} tareas.")
     # Ejecucion de funcion que inserta los 1000 resultados en la DB
-    insert_results(results)
+    # insert_results(results)
 
 if __name__ == "__main__":
     main()
+    sys.exit()

@@ -1,11 +1,11 @@
-import pygame
+import pygame, time, sys
 from Deck import Deck
 from Waste import Waste
 from Foundation import Foundation
 from Table import Table
 from pygame.locals import RESIZABLE
 from tkinter import messagebox
-import time
+from Movement import Moves
 
 
 class Game:
@@ -13,8 +13,7 @@ class Game:
         pygame.init()
         pygame.display.set_caption("Solitario")
 
-        info = pygame.display.Info()
-        self.window_size = (info.current_w, info.current_h)
+        self.window_size = (900, 885)
         self.screen = pygame.display.set_mode(self.window_size, RESIZABLE)
         self.backgroundImage = pygame.image.load("assets/backgroundd.jpg")
 
@@ -40,6 +39,19 @@ class Game:
         self.foundations = self.create_foundations()
         self.check_if_lock = []
 
+    def card_follow_mouse(self, mouse_x, mouse_y):
+        
+        if self.holding_cards != []:
+            
+            x = mouse_x - 50
+            y = mouse_y - 50
+            pos = 0
+            
+            for card in self.holding_cards:
+                card.set_coordinates(x, y + (pos * 40))
+                pygame.sprite.GroupSingle(card).draw(self.screen)
+                pos += 1
+
     def create_tables(self):
         tables = []
         x = 25
@@ -53,33 +65,37 @@ class Game:
         foundations = []
         x = 400
         suits = ["hearts", "diamonds", "spades", "clubs"]
-
+        
         for i in range(len(suits)):
             foundations.append(Foundation(x, suits[i]))
             x += 125
         return foundations
 
     def message_display(self, text, cords):
-        large_text = pygame.font.Font("assets/freesansbold.ttf", 17)
-        text_surface = large_text.render(text, True, (255, 255, 255))
+        large_text = pygame.font.Font('assets/freesansbold.ttf',17)
+        text_surface = large_text.render(text, True, (255,255,255))
         TextSurf, TextRect = text_surface, text_surface.get_rect()
         TextRect.center = cords
         self.screen.blit(TextSurf, TextRect)
 
+
     def game_loop(self):
         start_time = time.time()
+        moves = Moves()
+
         while self.game_is_running:
             self.timer = int(time.time() - start_time)
             mouse_x, mouse_y = pygame.mouse.get_pos()
-
+            moves.update_mouse_position(mouse_x, mouse_y)
+            
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    self.clicked_new_card(mouse_x, mouse_y)
-                    self.check_holding_card(mouse_x, mouse_y)
+                    moves.clicked_new_card(self)  # Call clicked_new_card from Moves
+                    moves.check_holding_card(self)  # Call check_holding_card from Moves
 
                 if event.type == pygame.MOUSEBUTTONUP:
                     if self.holding_cards != []:
-                        self.place_card(mouse_x, mouse_y)
+                        moves.place_card(self)
                         self.holding_cards = []
                         self.waste.set_cards()
 
@@ -110,5 +126,4 @@ class Game:
 
             pygame.display.update()
 
-            self.clock.tick(60)
-            self.auto_solve()
+            self.clock.tick(120)
