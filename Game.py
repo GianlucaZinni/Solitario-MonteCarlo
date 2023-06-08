@@ -24,6 +24,7 @@ class Game:
         self.backgroundImage = pygame.image.load("assets/backgroundd.jpg")
         """Link de donde obtuvimos los gráficos de las cartas utilizadas.
         http://byronknoll.blogspot.com/2011/03/vector-playing-cards.html"""
+        
         # Se crea la instancia del objeto *Deck()*
         self.deck = Deck()
         # Se utiliza la función que mezcla el mazo.
@@ -36,9 +37,8 @@ class Game:
         self.holding_card_group = None  # Variable establecida en None que luego se actualizará para indicar qué grupo de cartas esta sosteniendo el usuario.
         self.mouse_cords = ()           # Tupla vacía que se actualizará cada vez que el usuario mueva el raton.
         self.moves = 0                  # Contador de movimientos.
-        self.score = 0                  # Contador de puntos.
-        self.frame = 0                  # Contador de .
         self.timer = 0                  # Contador de tiempo.
+        
         """Definen los efectos de sonido que se reproducen en el juego.
         La función *pygame.mixer.sound()* se utiliza para cargar el archivo de sonido en la variable correspondiente.
         Luego se reproduce el sonido al barajar als cartas utiliando la función *play()*"""
@@ -684,7 +684,7 @@ class Game:
             for table in self.tables:
                 for card in table.get_table():
                     if not card in self.holding_cards:
-                        pygame.sprite.GroupSingle(card).draw( self.screen)
+                        pygame.sprite.GroupSingle(card).draw(self.screen)
 
             """El bucle FOR recorre cada pila de base (foundation) y llama al método get_top_card() para obtener la carta en la cima de cada pila. 
             Luego, se verifica si la carta no se está sosteniendo con el cursor (not card in self.holding_cards). 
@@ -692,26 +692,25 @@ class Game:
             for foundation in self.foundations:
                 card = foundation.get_top_card()
                 if not card in self.holding_cards:
-                    pygame.sprite.GroupSingle(card).draw( self.screen)
+                    pygame.sprite.GroupSingle(card).draw(self.screen)
 
             """El bucle FOR recorre cada carta en la pila de descarte (waste) llamando al método get_show_waste_pile(). 
             Luego, se verifica si la carta no se está sosteniendo con el ratón (not card in holding_cards). 
             Si es así, la carta se dibuja en la pantalla usando el método draw() de pygame.sprite.GroupSingle."""
             for card in self.waste.get_show_waste_pile():
                 if not card in self.holding_cards:
-                    pygame.sprite.GroupSingle(card).draw( self.screen)
+                    pygame.sprite.GroupSingle(card).draw(self.screen)
 
             """Función que dibuja cualquier carta que se esté sosteniendo con el ratón en la posición actual del ratón."""
             self.card_follow_mouse(mouse_x, mouse_y)
 
             """Se llama a la función message_display() tres veces para mostrar el temporizador, la puntuación y el número de movimientos en la parte superior de la pantalla."""
             self.message_display(str(self.timer), (352, 39))
-            self.message_display(str(self.score), (454, 39))
             self.message_display(str(self.moves), (561, 39))
 
             """Función que actualiza la pantalla con los cambios realizados."""
             pygame.display.update()
             
             """FUnción que limita la velocidad del juego a 60 fotogramas por segundo."""
-            self.clock.tick(60)
+            self.clock.tick(120)
             self.auto_solve()
