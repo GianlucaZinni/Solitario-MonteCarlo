@@ -6,13 +6,13 @@ class Waste:
         self.waste_pile = []            # Pila de residuo NO visible  (Cartas que no estan en el tablero)
         self.show_pile = []             # Pila de residuo visible
         self.y = 68                     # Coordenadas de la iamgen de las cartas en el eje y.
-        self.x = [150, 175, 200]        # Coordenadas de la imagen de las cartas en el eje x, desapiladas del mazo, 1ra, 2da, 3ra
+        self.x = [175, 200, 225]        # Coordenadas de la imagen de las cartas en el eje x, desapiladas del mazo, 1ra, 2da, 3ra
 
     def get_waste_pile(self):           # Retorna la pila de residuo NO visible.
         return self.waste_pile
 
     def add_card(self, card):           # agrega una carta a la pila de residuo NO visible.
-        card.set_coordinates(-150,0)    # Coordenadas de la pila de residuo NO visible.
+        card.set_coordinates(150, 68)    # Coordenadas de la pila de residuo NO visible.
         self.waste_pile.append(card)    
         self.set_cards()
 

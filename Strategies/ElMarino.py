@@ -1,40 +1,45 @@
-class AutoSolve:
+import time, pygame
 
-    def __init__(self, game):
-        self.game = game
+class ElMarino:
 
-    def solve(self):
+    def UnderTaker(self, game, moves):
         moved = False
-
-        while moved:
-            moved = False
-
-            for table in self.game.tables:
-
-                card = table.bottom_card()
-                if card is not None:
-                    moved = self.bottom_card_foundation(card, table, moved)
+        
+        check_if_moved = True
+        
+        for table in game.tables:
+            
+            card = table.bottom_card()
+            if card is not None:
+                moved = moves.bottom_card_foundation(game, card, table, moved)
+                if not moved:
+                    moved = moves.bottom_card_table(game, card, table, moved)
                     if not moved:
-                        moved = self.bottom_card_table(card, table, moved)
+                        cards = table.get_showing_cards(table.get_table())
+                        if len(cards[0]) > 1:
+                            moved = moves.upper_card_table(game, cards, table, moved)
+        
+        if not moved and len(game.deck.get_deck()) > 0 or len(game.waste.get_waste_pile()) > 0:
+            if not game.waste.show_is_empty():
+                moved = moves.check_waste_card(game, moved)
+        
+        if not moved and len(game.deck.get_deck()) <= 0:
+            game.deck.add_cards(list(reversed(game.waste.get_waste_pile().copy())))
+            game.waste.empty()
+            game.moves += 1
+            check_if_moved = False
+        
+        if not moved and len(game.deck.get_deck()) > 0:
+            game.waste.add_card(game.deck.remove_card())
+            game.moves += 1
+            check_if_moved = False
+        
+        game.check_if_lock.append(check_if_moved)
+        last_twentyfour = game.check_if_lock[-24:]
+        if True not in last_twentyfour:
+            print("Game Over")
+            quit()
+            
+        pygame.display.update()
+        
 
-    def bottom_card_foundation(self, card, table, moved):
-        for foundation in self.game.foundations:
-            if foundation.get_suit() == card.get_suit():
-                if foundation.get_top_card() is None or foundation.get_top_card().get_value() == card.get_value() + 1:
-                    foundation.add_card(card)
-                    table.remove_card(card)
-                    moved = True
-                    break
-        return moved
-
-    def bottom_card_table(self, card, table, moved):
-        for table_index in range(len(self.game.tables) - 1, -1, -1):
-            other_table = self.game.tables[table_index]
-            if other_table != table:
-                other_card = other_table.bottom_card()
-                if other_card is not None and other_card.get_color() != card.get_color() and other_card.get_value() == card.get_value() - 1:
-                    other_table.remove_card(other_card)
-                    table.add_cards([card, other_card])
-                    moved = True
-                    break
-        return moved
