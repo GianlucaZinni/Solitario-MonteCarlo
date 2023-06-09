@@ -6,11 +6,11 @@ class BasicMoves:
         self.mouse_x = 0
         self.mouse_y = 0
         
-    def update_mouse_position(self, mouse_x, mouse_y):
+    def update_mouse_position(self, mouse_x, mouse_y):  # Actualiza la posición del mouse
         self.mouse_x = mouse_x
         self.mouse_y = mouse_y
         
-    def card_follow_mouse(self, game):
+    def card_follow_mouse(self, game): # Función que genera el efecto de arrastrar una carta
         
         mouse_x = self.mouse_x
         mouse_y = self.mouse_y
@@ -27,7 +27,7 @@ class BasicMoves:
                 pos += 1
 
     
-    def clicked_new_card(self, game):
+    def clicked_new_card(self, game): # Agrega una carta de la pila no visible a la pila visible
         
         mouse_x = self.mouse_x
         mouse_y = self.mouse_y
@@ -42,7 +42,7 @@ class BasicMoves:
                 game.waste.add_card(game.deck.remove_card())
                 game.place_sound.play()
 
-    def check_holding_card(self, game):
+    def check_holding_card(self, game): # Verifica si se está sosteniendo una carta
         
         mouse_x = self.mouse_x
         mouse_y = self.mouse_y
@@ -81,7 +81,7 @@ class BasicMoves:
                 else:
                     game.holding_cards = [card[0]]
 
-    def place_card(self, game):
+    def place_card(self, game): # Función que coloca una carta en una pila automáticamente con un click
         
         mouse_x = self.mouse_x
         mouse_y = self.mouse_y
@@ -189,8 +189,11 @@ class BasicMoves:
                                 return
 
         game.holding_card_group.set_cards()
+        
 
-    def check_waste_card(self, game, moved):
+    # Movimientos automáticos
+
+    def check_waste_card(self, game, moved): # Función que comprueba si la carta de descarte se puede colocar en una pila automáticamente
         waste_card = game.waste.get_top_card()
         if waste_card is not None:
             moved = self.waste_card_foundation(game, waste_card, moved)
@@ -198,7 +201,7 @@ class BasicMoves:
                 moved = self.waste_card_table(game, waste_card, moved)
         return moved
 
-    def bottom_card_foundation(self, game, card, table, moved):
+    def bottom_card_foundation(self, game, card, table, moved): # Función que comprueba si la carta de la parte inferior de una tabla se puede colocar en un foundation automáticamente
         for foundation in game.foundations:
             if foundation.get_suit() == card.get_suit():
                 if card.get_value() == 1:
@@ -220,7 +223,7 @@ class BasicMoves:
                             break
         return moved
 
-    def waste_card_foundation(self, game, waste_card, moved):
+    def waste_card_foundation(self, game, waste_card, moved): # Función que comprueba si la carta de descarte se puede colocar en una foundation automáticamente
         for foundation in game.foundations:
             if waste_card is not None:
                 if foundation.get_suit() == waste_card.get_suit():
@@ -243,7 +246,7 @@ class BasicMoves:
                                 break
         return moved
 
-    def bottom_card_table(self, game, card, table, moved):
+    def bottom_card_table(self, game, card, table, moved): #  # Función que comprueba si la carta de la parte inferior de una tabla se puede colocar en otra tabla automáticamente
         for dest_table in game.tables:
             if dest_table != table:
                 dest_card = dest_table.bottom_card()
@@ -279,7 +282,7 @@ class BasicMoves:
 
         return moved
 
-    def waste_card_table(self, game, card, moved):
+    def waste_card_table(self, game, card, moved): # Función que comprueba si la carta de descarte se puede colocar en una tabla automáticamente
         for dest_table in game.tables:
             dest_card = dest_table.bottom_card()
             if dest_card is not None:
@@ -301,7 +304,7 @@ class BasicMoves:
                     time.sleep(0.2)
         return moved
 
-    def upper_card_table(self, game, cards, table, moved):
+    def upper_card_table(self, game, cards, table, moved): # Función que comprueba si la carta visible de la parte superior de una tabla se puede colocar en otra tabla automáticamente
         for dest_table in game.tables:
             if dest_table != table:
                 dest_card = dest_table.bottom_card()

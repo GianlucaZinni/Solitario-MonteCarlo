@@ -5,40 +5,46 @@ from conf.Foundation import Foundation
 from conf.Table import Table
 from pygame.locals import RESIZABLE
 from func.Movement import BasicMoves
-from func.Strategies import ElMarino
+from func.Strategies import ElMarino, LaSocialista, ElBombero
 
 
 class Game:
-    def __init__(self):
+    def __init__(self, idEstrategia):
         pygame.init()
         pygame.display.set_caption("Solitario")
+        
+        # Identificador de la estrategia del juego
+        self.idEstrategia = idEstrategia
 
+        # Configuración de la pantalla
         self.window_size = (900, 885)
         self.screen = pygame.display.set_mode(self.window_size, RESIZABLE)
         self.backgroundImage = pygame.image.load("static/assets/layout/backgroundd.jpg")
 
+        # Booleano para controlar el loop principal
         self.game_is_running = True
 
+        # Variables para generar el mazo y el reloj
         self.deck = Deck()
         self.deck.shuffle()
-
         self.waste = Waste()
         self.clock = pygame.time.Clock()
 
+        # Variables para el movimiento de las cartas
         self.holding_cards = []
         self.holding_card_group = None
         self.mouse_cords = ()
+        
+        # Variables contabilizadoras
         self.moves = 0
         self.timer = 0
 
-        self.place_sound = pygame.mixer.Sound("static/assets/sounds/flip.wav")
-        self.shuffle_sound = pygame.mixer.Sound("static/assets/sounds/shuffle.wav")
-        self.shuffle_sound.play()
-
+        # Variables para generar el tablero
         self.tables = self.create_tables()
         self.foundations = self.create_foundations()
-        self.check_if_lock = []
         
+        # Variables para finalizar la partida
+        self.check_if_lock = []
         self.result_counter = 0
         self.finish = False
 
@@ -73,6 +79,8 @@ class Game:
         moves = BasicMoves()
         
         elmarino = ElMarino()
+        lasocialista = LaSocialista()
+        elbombero = ElBombero()
 
         while self.game_is_running:
             self.timer = int(time.time() - start_time)
@@ -119,7 +127,18 @@ class Game:
             pygame.display.update()
 
             self.clock.tick(120)
-            elmarino.UnderTaker(self, moves)
+            
+            Strategies = {
+                "1" : elmarino.UnderTaker(self, moves),
+                "2" : lasocialista.Gestionadora(self, moves),
+                "3" : elbombero.ApagaLlamas(self, moves)
+            }
+            
+            for key, value in Strategies.items():
+                if self.idEstrategia == key:
+                    value
+                    break
+                
             self.game_result()
             if self.finish:
                 quit()
@@ -127,11 +146,11 @@ class Game:
     def game_result(self):
         if self.result_counter == 4:
             results = {
-                "idGames": 1,
+                "idGames": None,
                 "victoria": True,
                 "duracion": self.timer,
                 "movimientos": self.moves,
-                "idEstrategia": {"id": 1, "nombre": "El Marino", "descripcion": "desc"}
+                "idEstrategia": self.idEstrategia
             }
             self.finish=True
             print(results)
@@ -139,11 +158,11 @@ class Game:
         
         elif self.result_counter == 5:
             results = {
-                "idGames": 1,
+                "idGames": None,
                 "victoria": False,
                 "duracion": self.timer,
                 "movimientos": self.moves,
-                "idEstrategia": {"id": 1, "nombre": "El Marino", "descripcion": "desc"}
+                "idEstrategia": self.idEstrategia
             }
             self.finish=True
             print(results)
