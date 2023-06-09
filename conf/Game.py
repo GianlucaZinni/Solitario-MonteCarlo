@@ -129,14 +129,14 @@ class Game:
             self.clock.tick(120)
             
             Strategies = {
-                "1" : elmarino.UnderTaker(self, moves),
-                "2" : lasocialista.Gestionadora(self, moves),
-                "3" : elbombero.ApagaLlamas(self, moves)
+                1 : elmarino.UnderTaker,
+                2 : lasocialista.Gestionadora,
+                3 : elbombero.ApagaLlamas
             }
             
             for key, value in Strategies.items():
                 if self.idEstrategia == key:
-                    value
+                    value(self, moves)
                     break
                 
             self.game_result()

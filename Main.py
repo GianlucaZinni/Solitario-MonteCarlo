@@ -21,43 +21,33 @@ def play_game(partida, idEstrategia):
 def main():
     task_quantity = 6
     results = []
-    batch_size = 2 # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
+    batch_size = 2  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
     pool = multiprocessing.Pool(processes=batch_size)
-    
-    target_count = task_quantity // 3 # Siendo 3 la cantidad de Estrategias
-    count_1 = count_2 = count_3 = 0  # Contadores para cada valor    
+
+    target_count = task_quantity // 3  # Siendo 3 la cantidad de Estrategias
+    count_1 = count_2 = count_3 = 0  # Contadores para cada valor
     for i in range(0, task_quantity, batch_size):
-        
-        for _ in range(task_quantity):
-            idEstrategia = random.randint(1, 3)
+        games = []
+        for _ in range(i, min(i + batch_size, task_quantity)):
+            # Generar un idEstrategia aleatorio que aún no se haya utilizado la cantidad target_count de veces
+            idEstrategia = random.choice([1, 2, 3])
+            while (idEstrategia == 1 and count_1 >= target_count) or (idEstrategia == 2 and count_2 >= target_count) or (idEstrategia == 3 and count_3 >= target_count):
+                idEstrategia = random.choice([1, 2, 3])
             
-            # Asegurarse de que cada valor se genere al task_count veces
-            if idEstrategia == 1 and count_1 < target_count:
+            # Incrementar el contador correspondiente
+            if idEstrategia == 1:
                 count_1 += 1
-            elif idEstrategia == 2 and count_2 < target_count:
+            elif idEstrategia == 2:
                 count_2 += 1
-            elif idEstrategia == 3 and count_3 < target_count:
+            elif idEstrategia == 3:
                 count_3 += 1
-            else:
-                # Si ya se generaron cinco veces, seleccionar el siguiente valor disponible
-                if count_1 < target_count:
-                    idEstrategia = 1
-                    count_1 += 1
-                elif count_2 < target_count:
-                    idEstrategia = 2
-                    count_2 += 1
-                else:
-                    idEstrategia = 3
-                    count_3 += 1
-                    
-            print(idEstrategia)
-            
-            games = [
+
+            games.append(
                 pool.apply_async(
-                        play_game, (partida, idEstrategia)
-                    ) 
-            for partida in range(i, min(i + 15, task_quantity))]
-        
+                    play_game, (i, idEstrategia,)
+                )
+            )
+
         for game in games:
             try:
                 result = game.get()
