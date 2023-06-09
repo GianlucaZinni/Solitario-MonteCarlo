@@ -5,21 +5,20 @@ import sys, random
 
 def play_game(ejecucion, idEstrategia):
     ejecucion += 1
-    print(f"Iniciando ejecución {ejecucion}")
     game = Game(ejecucion, idEstrategia)
-    print(game.results)
     # game.deck.reset_deck()  # Restablecer el mazo antes de comenzar la partida
-
     game.game_loop()
+    results = game.results
+    print(results.get('victoria'), results.get('duracion'), results.get('movimientos'), results.get('mazo'), results.get('idEstrategia'))
     
-    insert_results(db_config, game.results)
+    # insert_results(game.results)
 
     print(f"Partida {ejecucion} finalizada")
     if game.finish:
         quit()
 
 # Utilizacion de la base de datos para insertar miles de resultados a la vez
-def insert_results(db_config, results):
+def insert_results(results):
     with MySQLConnection() as cnx:
         with cnx.cursor() as cursor:
             insert_query = "INSERT INTO games (victoria, duracion, movimientos, mazo, idEstrategia) VALUES (%s, %s, %s, %s, %s)"
@@ -27,9 +26,8 @@ def insert_results(db_config, results):
             cnx.commit()
 
 def main():
-    task_quantity = 3  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
-    batch_size = 1  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
-    result_queue = multiprocessing.Queue()
+    task_quantity = 9  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
+    batch_size = 3  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
     processes = []
 
     if task_quantity < 3:
@@ -62,7 +60,7 @@ def main():
             elif idEstrategia == 3:
                 count_3 += 1
 
-            process = multiprocessing.Process(target=play_game, args=(i, idEstrategia, result_queue))
+            process = multiprocessing.Process(target=play_game, args=(i, idEstrategia))
             processes.append(process)
             process.start()
 

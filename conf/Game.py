@@ -150,7 +150,7 @@ class Game:
             results = {
                 "idGames": None,
                 "victoria": True,
-                "duracion": self.timer,
+                "duracion": f"{self.timer} segundos",
                 "movimientos": self.moves,
                 "mazo" : self.full_deck,
                 "idEstrategia": self.idEstrategia
@@ -164,7 +164,7 @@ class Game:
             results = {
                 "idGames": None,
                 "victoria": False,
-                "duracion": self.timer,
+                "duracion": f"{self.timer} segundos",
                 "movimientos": self.moves,
                 "mazo" : self.full_deck,
                 "idEstrategia": self.idEstrategia
