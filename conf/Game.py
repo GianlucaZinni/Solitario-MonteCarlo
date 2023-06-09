@@ -7,12 +7,11 @@ from pygame.locals import RESIZABLE
 from func.Movement import BasicMoves
 from func.Strategies import ElMarino, LaSocialista, ElBombero
 
-
 class Game:
-    def __init__(self, idEstrategia):
+    def __init__(self, ejecucion, idEstrategia):
         pygame.init()
-        pygame.display.set_caption("Solitario")
-        
+        pygame.display.set_caption("Ejecucion: " + str(ejecucion) + " / Estrategia: " + str(idEstrategia) + " / Solitario")
+
         # Identificador de la estrategia del juego
         self.idEstrategia = idEstrategia
 
@@ -27,14 +26,18 @@ class Game:
         # Variables para generar el mazo y el reloj
         self.deck = Deck()
         self.deck.shuffle()
+
         self.waste = Waste()
         self.clock = pygame.time.Clock()
+        
+        # Variable que almacena el mazo utilizado en la partida
+        self.full_deck = self.deck.insert_all_cards()
 
         # Variables para el movimiento de las cartas
         self.holding_cards = []
         self.holding_card_group = None
         self.mouse_cords = ()
-        
+
         # Variables contabilizadoras
         self.moves = 0
         self.timer = 0
@@ -42,11 +45,12 @@ class Game:
         # Variables para generar el tablero
         self.tables = self.create_tables()
         self.foundations = self.create_foundations()
-        
+
         # Variables para finalizar la partida
         self.check_if_lock = []
         self.result_counter = 0
         self.finish = False
+        self.results = None
 
     def create_tables(self):
         tables = []
@@ -123,25 +127,23 @@ class Game:
 
             self.message_display(str(self.timer), (352, 39))
             self.message_display(str(self.moves), (561, 39))
-
-            pygame.display.update()
-
+            
             self.clock.tick(120)
             
             Strategies = {
-                1 : elmarino.UnderTaker,
-                2 : lasocialista.Gestionadora,
-                3 : elbombero.ApagaLlamas
+                1 : (elmarino.UnderTaker, "El Marino"),
+                2 : (lasocialista.Gestionadora, "La Socialista"),
+                3 : (elbombero.ApagaLlamas, "El Bombero" )
             }
             
             for key, value in Strategies.items():
                 if self.idEstrategia == key:
-                    value(self, moves)
+                    value[0](self, moves)
+                    self.message_display(value[1], (455, 14))
                     break
-                
-            self.game_result()
-            if self.finish:
-                quit()
+
+            pygame.display.update()
+            self.results = self.game_result()
 
     def game_result(self):
         if self.result_counter == 4:
@@ -150,10 +152,12 @@ class Game:
                 "victoria": True,
                 "duracion": self.timer,
                 "movimientos": self.moves,
+                "mazo" : self.full_deck,
                 "idEstrategia": self.idEstrategia
             }
             self.finish=True
-            print(results)
+            self.game_is_running = False
+            #print(self.results)
             return results
         
         elif self.result_counter == 5:
@@ -162,10 +166,12 @@ class Game:
                 "victoria": False,
                 "duracion": self.timer,
                 "movimientos": self.moves,
+                "mazo" : self.full_deck,
                 "idEstrategia": self.idEstrategia
             }
             self.finish=True
-            print(results)
+            self.game_is_running = False
+            #print(self.results)
             return results
         
         for foundation in self.foundations:

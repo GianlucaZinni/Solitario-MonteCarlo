@@ -39,3 +39,12 @@ class Deck:
 
     def remove_card(self):          # función que elimina una carta del mazo.   (Sirve para ir sacando una carta a la vez del mazo y mostrarla en la pila visible)
         return self.deck.pop()
+    
+    def reset_deck(self):
+        self.deck = self.insert_all_cards[:]
+        
+    def insert_all_cards(self):
+        all_cards = []
+        for card in self.deck:
+            all_cards.append((card.get_suit(), card.get_value()))
+        return all_cards

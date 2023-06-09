@@ -3,31 +3,51 @@ from static.Database import MySQLConnection
 from conf.Game import Game
 import sys, random
 
-def play_game(partida, idEstrategia):
-    print(f"Iniciando partida {partida}")
-    game = Game(idEstrategia)
-    results = game.game_loop()
-    print(f"Partida {partida} finalizada")
-    return results
+def play_game(ejecucion, idEstrategia):
+    ejecucion += 1
+    print(f"Iniciando ejecución {ejecucion}")
+    game = Game(ejecucion, idEstrategia)
+    print(game.results)
+    # game.deck.reset_deck()  # Restablecer el mazo antes de comenzar la partida
+
+    game.game_loop()
+    
+    insert_results(db_config, game.results)
+
+    print(f"Partida {ejecucion} finalizada")
+    if game.finish:
+        quit()
 
 # Utilizacion de la base de datos para insertar miles de resultados a la vez
-# def insert_results(db_config, results):
-#     with MySQLConnection() as cnx:
-#         with cnx.cursor() as cursor:
-#             insert_query = "INSERT INTO games (victoria, duracion, idEstrategia) VALUES (%s, %s, %s)"
-#             cursor.executemany(insert_query, [(result.win, result.duration, result.idEstrategia) for result in results])
-#             cnx.commit()
+def insert_results(db_config, results):
+    with MySQLConnection() as cnx:
+        with cnx.cursor() as cursor:
+            insert_query = "INSERT INTO games (victoria, duracion, movimientos, mazo, idEstrategia) VALUES (%s, %s, %s, %s, %s)"
+            cursor.executemany(insert_query, [(result.victoria, result.duracion, result.movimientos, results.mazo, results.idEstrategia) for result in results])
+            cnx.commit()
 
 def main():
-    task_quantity = 6
-    results = []
-    batch_size = 2  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
-    pool = multiprocessing.Pool(processes=batch_size)
+    task_quantity = 3  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
+    batch_size = 1  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
+    result_queue = multiprocessing.Queue()
+    processes = []
+
+    if task_quantity < 3:
+        task_quantity = 3 
+        
+    if batch_size <= 0 or batch_size > task_quantity:
+        batch_size = task_quantity
+
+    if task_quantity % 3 != 0:
+        diferencia = 3 - (task_quantity % 3)  # Calcula la diferencia necesaria para que sea divisible por 3
+        if diferencia <= 1.5:
+            task_quantity += round(diferencia)  # Suma la diferencia redondeada si es menor o igual a 1.5
+        else:
+            task_quantity -= round(3 - diferencia)  # Resta la diferencia redondeada si es mayor a 1.5
 
     target_count = task_quantity // 3  # Siendo 3 la cantidad de Estrategias
     count_1 = count_2 = count_3 = 0  # Contadores para cada valor
     for i in range(0, task_quantity, batch_size):
-        games = []
         for _ in range(i, min(i + batch_size, task_quantity)):
             # Generar un idEstrategia aleatorio que aún no se haya utilizado la cantidad target_count de veces
             idEstrategia = random.choice([1, 2, 3])
@@ -42,23 +62,13 @@ def main():
             elif idEstrategia == 3:
                 count_3 += 1
 
-            games.append(
-                pool.apply_async(
-                    play_game, (i, idEstrategia,)
-                )
-            )
+            process = multiprocessing.Process(target=play_game, args=(i, idEstrategia, result_queue))
+            processes.append(process)
+            process.start()
 
-        for game in games:
-            try:
-                result = game.get()
-                results.append(result)
-                print(results)
-                print(f"La tarea {game} fue completada")
-            except Exception as e:
-                print(f"Error en la partida: {e}")
-    print(f"Se completaron {len(results)} tareas.")
-    # Ejecucion de funcion que inserta los 1000 resultados en la DB
-    # insert_results(results)
+        # Esperar a que los procesos terminen en el orden correcto
+        for process in processes:
+            process.join()
 
 if __name__ == "__main__":
     main()
