@@ -17,9 +17,10 @@ class Waste:
         self.set_cards()
 
     def remove_card(self):              # Remueve la última carta de la pila de residuo NO visible.
-        card = self.waste_pile.pop()
-        time.sleep(0.5)
-        return card
+        if len(self.waste_pile) > 0:
+            card = self.waste_pile.pop()
+            time.sleep(0.5)
+            return card
 
     def empty(self):                    # Vacía la pila de residuo NO visible esta vacía.
         self.waste_pile.clear()

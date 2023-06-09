@@ -10,7 +10,7 @@ from func.Strategies import ElMarino, LaSocialista, ElBombero
 class Game:
     def __init__(self, ejecucion, idEstrategia):
         pygame.init()
-        pygame.display.set_caption("Ejecucion: " + str(ejecucion) + " / Estrategia: " + str(idEstrategia) + " / Solitario")
+        pygame.display.set_caption("Partida: " + str(ejecucion) + " / Estrategia: " + str(idEstrategia) + " / Solitario")
 
         # Identificador de la estrategia del juego
         self.idEstrategia = idEstrategia
@@ -49,7 +49,6 @@ class Game:
         # Variables para finalizar la partida
         self.check_if_lock = []
         self.result_counter = 0
-        self.finish = False
         self.results = None
 
     def create_tables(self):
@@ -146,7 +145,7 @@ class Game:
             self.results = self.game_result()
 
     def game_result(self):
-        if self.result_counter == 4:
+        if self.check_all_cards_face_up():
             results = {
                 "idGames": None,
                 "victoria": True,
@@ -155,9 +154,8 @@ class Game:
                 "mazo" : self.full_deck,
                 "idEstrategia": self.idEstrategia
             }
-            self.finish=True
             self.game_is_running = False
-            #print(self.results)
+
             return results
         
         elif self.result_counter == 5:
@@ -169,14 +167,13 @@ class Game:
                 "mazo" : self.full_deck,
                 "idEstrategia": self.idEstrategia
             }
-            self.finish=True
             self.game_is_running = False
-            #print(self.results)
             return results
         
-        for foundation in self.foundations:
-            complete_pile = foundation.get_Foundation()
-            if len(complete_pile) != 13:
-                return
-            else:
-                self.result_counter += 1
+    def check_all_cards_face_up(self):
+        for table in self.tables:
+            table_cards = table.get_table()
+            for card in table_cards:
+                if not card.is_front_showing():
+                    return False
+        return True

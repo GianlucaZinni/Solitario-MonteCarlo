@@ -1,6 +1,5 @@
-import pygame
+import pygame, time, random
 from conf.Card import Card
-import random
 
 class Deck:
 
@@ -38,7 +37,12 @@ class Deck:
         self.deck = cards
 
     def remove_card(self):          # función que elimina una carta del mazo.   (Sirve para ir sacando una carta a la vez del mazo y mostrarla en la pila visible)
-        return self.deck.pop()
+        if len(self.deck) > 0:
+            card = self.deck.pop()
+            time.sleep(0.5)
+            return card
+
+
     
     def reset_deck(self):
         self.deck = self.insert_all_cards[:]

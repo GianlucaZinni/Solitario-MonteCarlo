@@ -118,7 +118,7 @@ class BasicMoves:
                         and value - 1 == game.holding_cards[0].get_value()
                     ):
                         table.add_cards(game.holding_cards)
-                        for card in game.holding_cards:
+                        for _ in game.holding_cards:
                             game.holding_card_group.remove_card()
                             game.place_sound.play()
                             game.moves += 1
@@ -126,7 +126,7 @@ class BasicMoves:
                 else:
                     if game.holding_cards[0].get_value() == 13:
                         table.add_cards(game.holding_cards)
-                        for card in game.holding_cards:
+                        for _ in game.holding_cards:
                             game.holding_card_group.remove_card()
                         game.place_sound.play()
                         game.moves += 1
@@ -152,7 +152,7 @@ class BasicMoves:
                         and value - 1 == game.holding_cards[0].get_value()
                     ):
                         table.add_cards(game.holding_cards)
-                        for card in game.holding_cards:
+                        for _ in game.holding_cards:
                             game.holding_card_group.remove_card()
                             game.place_sound.play()
                             game.moves += 1
@@ -160,7 +160,7 @@ class BasicMoves:
                 else:
                     if game.holding_cards[0].get_value() == 13:
                         table.add_cards(game.holding_cards)
-                        for card in game.holding_cards:
+                        for _ in game.holding_cards:
                             game.holding_card_group.remove_card()
                         game.place_sound.play()
                         game.moves += 1
@@ -189,7 +189,6 @@ class BasicMoves:
                                 return
 
         game.holding_card_group.set_cards()
-        
 
     # Movimientos automáticos
 
@@ -246,28 +245,11 @@ class BasicMoves:
                                 break
         return moved
 
-    def bottom_card_table(self, game, card, table, moved): #  # Función que comprueba si la carta de la parte inferior de una tabla se puede colocar en otra tabla automáticamente
+    def bottom_card_table(self, game, card, table, moved): # Función que comprueba si la carta de la parte inferior de una tabla se puede colocar en otra tabla automáticamente
         for dest_table in game.tables:
             if dest_table != table:
                 dest_card = dest_table.bottom_card()
-                if dest_card is None:
-                    if card.get_value() == 13:
-                        prev_card = table.prev_card()
-                        if prev_card is not None:
-                            if not prev_card.is_front_showing():
-                                dest_table.add_new_card(card)
-                                table.remove_card()
-                                moved = True
-                                game.moves += 1
-                                time.sleep(0.2)
-                        else:
-                            dest_table.add_new_card(card)
-                            table.remove_card()
-                            moved = True
-                            game.moves += 1
-                            time.sleep(0.2)
-                        
-                else:
+                if dest_card is not None:
                     if dest_card.get_color() != card.get_color():
                         if dest_card.get_value() - 1 == card.get_value():
                             prev_card = table.prev_card()
@@ -278,8 +260,25 @@ class BasicMoves:
                                     moved = True
                                     game.moves += 1
                                     time.sleep(0.2)
-                                    break
-
+                                    break  
+                else:
+                    if card.get_value() == 13:
+                        prev_card = table.prev_card()
+                        if prev_card is not None:
+                            if not prev_card.is_front_showing():
+                                dest_table.add_new_card(card)
+                                table.remove_card()
+                                moved = True
+                                game.moves += 1
+                                time.sleep(0.2)
+                                break
+                        else:
+                            dest_table.add_new_card(card)
+                            table.remove_card()
+                            moved = True
+                            game.moves += 1
+                            time.sleep(0.2)
+                            break
         return moved
 
     def waste_card_table(self, game, card, moved): # Función que comprueba si la carta de descarte se puede colocar en una tabla automáticamente
@@ -297,11 +296,11 @@ class BasicMoves:
             else:
                 if card.get_value() == 13:
                     dest_table.add_new_card(card)
-                    # hay un error aca.
                     game.waste.remove_card()
                     moved = True
                     game.moves += 1
                     time.sleep(0.2)
+                    break
         return moved
 
     def upper_card_table(self, game, cards, table, moved): # Función que comprueba si la carta visible de la parte superior de una tabla se puede colocar en otra tabla automáticamente
@@ -314,7 +313,7 @@ class BasicMoves:
                             return
                         else:
                             dest_table.add_cards(cards[0])
-                            for card in cards[0]:
+                            for _ in cards[0]:
                                 table.remove_card()
                             cards[0].clear()
                             moved = True
@@ -326,7 +325,7 @@ class BasicMoves:
                     if dest_card.get_color() != cards[0][0].get_color():
                         if dest_card.get_value() - 1 == cards[0][0].get_value():
                             dest_table.add_cards(cards[0])
-                            for card in cards[0]:
+                            for _ in cards[0]:
                                 table.remove_card()
                             moved = True
                             game.moves += 1

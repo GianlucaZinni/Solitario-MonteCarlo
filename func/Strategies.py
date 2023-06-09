@@ -1,15 +1,22 @@
-class ElMarino:
-    
+import time
+from abc import ABC, abstractmethod
+
+class Strategy(ABC):
     def __init__(self):
         self.primer_llamado = True
-        
+        self.primer_movimiento = True
+
+    @abstractmethod
+    def call(self):
+        pass
+
+class ElMarino(Strategy):
+    
     def call(self):
         if self.primer_llamado:
             print("Se ha iniciado El Marino, mi última adquisición.")
             self.primer_llamado = False
-        else:
-            pass
-    
+            
     def UnderTaker(self, game, moves):
         self.call()
         moved = False
@@ -17,6 +24,8 @@ class ElMarino:
         check_if_moved = True
         
         for table in game.tables:
+            
+            # Ver como hacer para que verifique si hay algun foundation del control contrario y devolverlo a la mesa, para realizar un movimiento y liberar una carta oculta.
             
             card = table.bottom_card()
             if card is not None:
@@ -27,7 +36,7 @@ class ElMarino:
                         cards = table.get_showing_cards(table.get_table())
                         if len(cards[0]) > 1:
                             moved = moves.upper_card_table(game, cards, table, moved)
-        
+                            
         if not moved and len(game.deck.get_deck()) > 0 or len(game.waste.get_waste_pile()) > 0:
             if not game.waste.show_is_empty():
                 moved = moves.check_waste_card(game, moved)
@@ -45,21 +54,18 @@ class ElMarino:
         
         game.check_if_lock.append(check_if_moved)
         last_twentyfour = game.check_if_lock[-24:]
-        if True not in last_twentyfour:
+        if not self.primer_movimiento and True not in last_twentyfour:
             game.result_counter = 5
             return
+        else:
+            self.primer_movimiento = False
 
-class LaSocialista:
+class LaSocialista(Strategy): # Primero intenta entre mismas tables y despues foundation
     
-    def __init__(self):
-        self.primer_llamado = True
-
     def call(self):
         if self.primer_llamado:
             print("Se ha iniciado La Socialista y su era dictatorial.")
             self.primer_llamado = False
-        else:
-            pass
 
     def Gestionadora(self, game, moves):
         self.call()
@@ -71,9 +77,9 @@ class LaSocialista:
             
             card = table.bottom_card()
             if card is not None:
-                moved = moves.bottom_card_foundation(game, card, table, moved)
+                moved = moves.bottom_card_table(game, card, table, moved)
                 if not moved:
-                    moved = moves.bottom_card_table(game, card, table, moved)
+                    moved = moves.bottom_card_foundation(game, card, table, moved)
                     if not moved:
                         cards = table.get_showing_cards(table.get_table())
                         if len(cards[0]) > 1:
@@ -96,21 +102,18 @@ class LaSocialista:
         
         game.check_if_lock.append(check_if_moved)
         last_twentyfour = game.check_if_lock[-24:]
-        if True not in last_twentyfour:
+        if not self.primer_movimiento and True not in last_twentyfour:
             game.result_counter = 5
             return
+        else:
+            self.primer_movimiento = False
 
-class ElBombero:
-
-    def __init__(self):
-        self.primer_llamado = True
+class ElBombero(Strategy): # Primero intenta al foundation y después entre las tables
 
     def call(self):
         if self.primer_llamado:
             print("Se ha iniciado El Bombero, la salvación.")
             self.primer_llamado = False
-        else:
-            pass
 
     def ApagaLlamas(self, game, moves):
         self.call()
@@ -147,6 +150,8 @@ class ElBombero:
         
         game.check_if_lock.append(check_if_moved)
         last_twentyfour = game.check_if_lock[-24:]
-        if True not in last_twentyfour:
+        if not self.primer_movimiento and True not in last_twentyfour:
             game.result_counter = 5
             return
+        else:
+            self.primer_movimiento = False

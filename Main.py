@@ -3,20 +3,23 @@ from static.Database import MySQLConnection
 from conf.Game import Game
 import sys, random
 
-def play_game(ejecucion, idEstrategia):
-    ejecucion += 1
-    game = Game(ejecucion, idEstrategia)
+strategies_output = {
+    1 : "El Marino",
+    2 : "La Socialista",
+    3 : "El Bombero"
+}
+
+def play_game(partida, idEstrategia):
+    game = Game(partida, idEstrategia)
     # game.deck.reset_deck()  # Restablecer el mazo antes de comenzar la partida
     game.game_loop()
     results = game.results
-    print(results.get('victoria'), results.get('duracion'), results.get('movimientos'), results.get('mazo'), results.get('idEstrategia'))
-    
+    #print(results.get('victoria'), results.get('duracion'), results.get('movimientos'), results.get('mazo'), results.get('idEstrategia'))
     # insert_results(game.results)
-
-    print(f"Partida {ejecucion} finalizada")
-    if game.finish:
+    print(f"Partida: {partida} - Estrategia: {strategies_output.get(results.get('idEstrategia'))} finalizada - Resultado: {results.get('victoria')}")
+    if game.game_is_running is False:
         quit()
-
+        
 # Utilizacion de la base de datos para insertar miles de resultados a la vez
 def insert_results(results):
     with MySQLConnection() as cnx:
@@ -26,8 +29,8 @@ def insert_results(results):
             cnx.commit()
 
 def main():
-    task_quantity = 9  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
-    batch_size = 3  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
+    task_quantity = 50  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
+    batch_size = 10  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
     processes = []
 
     if task_quantity < 3:
@@ -45,6 +48,7 @@ def main():
 
     target_count = task_quantity // 3  # Siendo 3 la cantidad de Estrategias
     count_1 = count_2 = count_3 = 0  # Contadores para cada valor
+    partida = 1  # Variable contador para incrementar en cada ejecución
     for i in range(0, task_quantity, batch_size):
         for _ in range(i, min(i + batch_size, task_quantity)):
             # Generar un idEstrategia aleatorio que aún no se haya utilizado la cantidad target_count de veces
@@ -60,10 +64,11 @@ def main():
             elif idEstrategia == 3:
                 count_3 += 1
 
-            process = multiprocessing.Process(target=play_game, args=(i, idEstrategia))
+            process = multiprocessing.Process(target=play_game, args=(partida, idEstrategia))
             processes.append(process)
             process.start()
-
+            partida += 1  # Incrementar el valor de x en cada ejecución
+            
         # Esperar a que los procesos terminen en el orden correcto
         for process in processes:
             process.join()
