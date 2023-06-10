@@ -10,7 +10,7 @@ strategies_output = {
 }
 
 def play_game(partida, idEstrategia):
-    game = Game(partida, idEstrategia)
+    game = Game(partida, 1)
     # game.deck.reset_deck()  # Restablecer el mazo antes de comenzar la partida
     game.game_loop()
     results = game.results
@@ -29,8 +29,8 @@ def insert_results(results):
             cnx.commit()
 
 def main():
-    task_quantity = 50  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
-    batch_size = 10  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
+    task_quantity = 5  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
+    batch_size = 1  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
     processes = []
 
     if task_quantity < 3:

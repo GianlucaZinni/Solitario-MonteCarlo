@@ -41,8 +41,6 @@ class Deck:
             card = self.deck.pop()
             time.sleep(0.5)
             return card
-
-
     
     def reset_deck(self):
         self.deck = self.insert_all_cards[:]

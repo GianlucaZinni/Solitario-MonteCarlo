@@ -33,9 +33,13 @@ class ElMarino(Strategy):
                 if not moved:
                     moved = moves.bottom_card_table(game, card, table, moved)
                     if not moved:
-                        cards = table.get_showing_cards(table.get_table())
-                        if len(cards[0]) > 1:
-                            moved = moves.upper_card_table(game, cards, table, moved)
+                        moved = moves.foundation_to_table_and_table_to_table(game, card, table, moved)
+                        if not moved:
+                            moved = moves.foundation_to_table_x2_and_table_to_table(game, card, table, moved)
+                        if not moved:
+                            cards = table.get_showing_cards(table.get_table())
+                            if len(cards[0]) > 1:
+                                moved = moves.upper_card_table(game, cards, table, moved)
                             
         if not moved and len(game.deck.get_deck()) > 0 or len(game.waste.get_waste_pile()) > 0:
             if not game.waste.show_is_empty():

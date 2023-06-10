@@ -73,7 +73,6 @@ class Table:
         except:
             print("list index out of range")
 
-
     def get_x(self):                        # Retorna la coordenada en el eje x.
         return self.x
 
@@ -124,3 +123,4 @@ class Table:
         for card in self.table_cards:
             card.set_coordinates(self.x, self.y + (pos * 40))
             pos += 1
+            

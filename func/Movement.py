@@ -246,39 +246,34 @@ class BasicMoves:
         return moved
 
     def bottom_card_table(self, game, card, table, moved): # Función que comprueba si la carta de la parte inferior de una tabla se puede colocar en otra tabla automáticamente
+        
+        prev_card = table.prev_card()
+        
+        print("card: ", card.get_value(), card.get_color())
+        
         for dest_table in game.tables:
             if dest_table != table:
                 dest_card = dest_table.bottom_card()
-                if dest_card is not None:
-                    if dest_card.get_color() != card.get_color():
-                        if dest_card.get_value() - 1 == card.get_value():
-                            prev_card = table.prev_card()
-                            if prev_card is not None:
-                                if not prev_card.is_front_showing():
-                                    dest_table.add_new_card(card)
-                                    table.remove_card()
-                                    moved = True
-                                    game.moves += 1
-                                    time.sleep(0.2)
-                                    break  
+                if prev_card is None or not prev_card.is_front_showing():
+                    
+                    print("prev_card: ", prev_card.get_value(), prev_card.get_color())
+                    
+                    if dest_card is not None and dest_card.get_color() != card.get_color() and dest_card.get_value() - 1 == card.get_value():
+                        dest_table.add_new_card(card)
+                        table.remove_card()
+                        moved = True
+                        game.moves += 1
+                        time.sleep(0.2)
+                        break
                 else:
-                    if card.get_value() == 13:
-                        prev_card = table.prev_card()
-                        if prev_card is not None:
-                            if not prev_card.is_front_showing():
-                                dest_table.add_new_card(card)
-                                table.remove_card()
-                                moved = True
-                                game.moves += 1
-                                time.sleep(0.2)
-                                break
-                        else:
+                    if card.get_value() == 13 and prev_card is not None:
+                        if dest_card is None:
                             dest_table.add_new_card(card)
                             table.remove_card()
                             moved = True
                             game.moves += 1
                             time.sleep(0.2)
-                            break
+                            break      
         return moved
 
     def waste_card_table(self, game, card, moved): # Función que comprueba si la carta de descarte se puede colocar en una tabla automáticamente
@@ -331,4 +326,61 @@ class BasicMoves:
                             game.moves += 1
                             time.sleep(0.2)
                             break
+        return moved
+    
+    def foundation_to_table_and_table_to_table(self, game, card, table, moved):
+        
+        prev_card = table.prev_card()
+        if prev_card is None or not prev_card.is_front_showing():
+            for dest_table in game.tables:
+                dest_card = dest_table.bottom_card()
+                if dest_card is not None and dest_card.get_value() - 2 == card.get_value() and dest_card.get_color() == card.get_color():
+                    for foundation in game.foundations:
+                        foundation_card = foundation.get_top_card()
+                        if foundation_card is not None and foundation_card.get_value() == dest_card.get_value() - 1 and foundation_card.get_suit() != dest_card.get_suit():
+                            print("prev_card: ", prev_card.get_value(), prev_card.get_suit())
+                            print("card: ", card.get_value(), card.get_suit())
+                            print("foundation_card: ", foundation_card.get_value(), foundation_card.get_suit())
+                            print("dest_card: ", dest_card.get_value(), dest_card.get_suit())
+                            foundation.remove_card()
+                            table.remove_card()
+                            dest_table.add_new_card(foundation_card)
+                            dest_table.add_new_card(card)
+                            moved = True
+                            game.moves += 2
+                            time.sleep(0.2)
+                            break
+        return moved
+
+    def foundation_to_table_x2_and_table_to_table(self, game, card, table, moved):
+        
+        prev_card = table.prev_card()
+        if prev_card is None or not prev_card.is_front_showing():
+            for dest_table1 in game.tables:
+                dest_card1 = dest_table1.bottom_card()
+                if dest_card1 is not None and dest_card1.get_value() - 2 == card.get_value() and dest_card1.get_color() == card.get_color():
+                    for foundation in game.foundations:
+                        foundation_card1 = foundation.get_top_card()
+                        if foundation_card1 is not None and foundation_card1.get_value() == dest_card1.get_value() and foundation_card1.get_suit() != dest_card1.get_suit() and foundation_card1.get_value() != 1:
+                            for dest_table2 in game.tables:
+                                dest_card2 = dest_table2.bottom_card()
+                                if dest_card2 is not None and dest_card2.get_value() - 1 == foundation_card1.get_value() and dest_card2.get_suit() == foundation_card1.get_suit():
+                                
+                                    print("prev_card: ", prev_card.get_value(), prev_card.get_suit())
+                                    print("dest_card2: ", dest_card2.get_value(), dest_card2.get_suit())
+                                    print("foundation_card1: ", foundation_card1.get_value(), foundation_card1.get_suit())
+                                    print("dest_card1: ", dest_card1.get_value(), dest_card1.get_suit())
+                                    print("foundation_card2: ", foundation_card1.get_value(), foundation_card1.get_suit())
+                                    print("card: ", card.get_value(), card.get_suit())
+                                    
+                                    foundation.remove_card()
+                                    table.remove_card()
+                                    foundation_card2 = foundation.get_top_card()
+                                    dest_table2.add_new_card(foundation_card1)
+                                    dest_table1.add_new_card(foundation_card2)
+                                    dest_table1.add_new_card(card)
+                                    moved = True
+                                    game.moves += 3
+                                    time.sleep(0.2)
+                                    break
         return moved
