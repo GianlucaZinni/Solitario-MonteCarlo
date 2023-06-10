@@ -23,9 +23,7 @@ class ElMarino(Strategy):
         
         check_if_moved = True
         
-        for table in game.tables:
-            
-            # Ver como hacer para que verifique si hay algun foundation del control contrario y devolverlo a la mesa, para realizar un movimiento y liberar una carta oculta.
+        for table in reversed(game.tables):
             
             card = table.bottom_card()
             if card is not None:
@@ -33,13 +31,15 @@ class ElMarino(Strategy):
                 if not moved:
                     moved = moves.bottom_card_table(game, card, table, moved)
                     if not moved:
-                        moved = moves.foundation_to_table_and_table_to_table(game, card, table, moved)
+                        moved = moves.prev_to_foundation(game, card, table, moved)
                         if not moved:
-                            moved = moves.foundation_to_table_x2_and_table_to_table(game, card, table, moved)
-                        if not moved:
-                            cards = table.get_showing_cards(table.get_table())
-                            if len(cards[0]) > 1:
-                                moved = moves.upper_card_table(game, cards, table, moved)
+                            moved = moves.foundation_to_table_and_table_to_table(game, card, table, moved)
+                            if not moved:
+                                moved = moves.foundation_to_table_x2_and_table_to_table(game, card, table, moved)
+                                if not moved:
+                                    cards = table.get_showing_cards(table.get_table())
+                                    if len(cards[0]) > 1:
+                                        moved = moves.upper_card_table(game, cards, table, moved)
                             
         if not moved and len(game.deck.get_deck()) > 0 or len(game.waste.get_waste_pile()) > 0:
             if not game.waste.show_is_empty():
@@ -78,7 +78,6 @@ class LaSocialista(Strategy): # Primero intenta entre mismas tables y despues fo
         check_if_moved = True
         
         for table in game.tables:
-            
             card = table.bottom_card()
             if card is not None:
                 moved = moves.bottom_card_table(game, card, table, moved)
@@ -125,8 +124,7 @@ class ElBombero(Strategy): # Primero intenta al foundation y después entre las 
         
         check_if_moved = True
         
-        for table in game.tables:
-            
+        for table in reversed(game.tables):
             card = table.bottom_card()
             if card is not None:
                 moved = moves.bottom_card_foundation(game, card, table, moved)
@@ -136,7 +134,7 @@ class ElBombero(Strategy): # Primero intenta al foundation y después entre las 
                         cards = table.get_showing_cards(table.get_table())
                         if len(cards[0]) > 1:
                             moved = moves.upper_card_table(game, cards, table, moved)
-        
+    
         if not moved and len(game.deck.get_deck()) > 0 or len(game.waste.get_waste_pile()) > 0:
             if not game.waste.show_is_empty():
                 moved = moves.check_waste_card(game, moved)

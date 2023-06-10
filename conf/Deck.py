@@ -29,9 +29,14 @@ class Deck:
                 
     def get_deck(self):             # función que retorna el mazo.
         return self.deck
+    
+    def set_deck(self, deck):
+        self.deck = deck
+        return self.deck
 
     def shuffle(self):              # función que mezcla el mazo
         random.shuffle(self.deck)
+        return self.deck
 
     def add_cards(self, cards):     # función que agrega una carta al mazo.     (Sirve a la hora de rellenar de nuevo el mazo, luego de haber sacado todas las cartas)
         self.deck = cards

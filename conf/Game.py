@@ -1,5 +1,4 @@
 import pygame, time, sys
-from conf.Deck import Deck
 from conf.Waste import Waste
 from conf.Foundation import Foundation
 from conf.Table import Table
@@ -8,7 +7,7 @@ from func.Movement import BasicMoves
 from func.Strategies import ElMarino, LaSocialista, ElBombero
 
 class Game:
-    def __init__(self, ejecucion, idEstrategia):
+    def __init__(self, ejecucion, idEstrategia, deck):
         pygame.init()
         pygame.display.set_caption("Partida: " + str(ejecucion) + " / Estrategia: " + str(idEstrategia) + " / Solitario")
 
@@ -24,8 +23,7 @@ class Game:
         self.game_is_running = True
 
         # Variables para generar el mazo y el reloj
-        self.deck = Deck()
-        self.deck.shuffle()
+        self.deck = deck
 
         self.waste = Waste()
         self.clock = pygame.time.Clock()
@@ -176,4 +174,20 @@ class Game:
             for card in table_cards:
                 if not card.is_front_showing():
                     return False
+        self.count_remaining_moves()
         return True
+    
+    def count_remaining_moves(self):
+
+        for _ in self.waste.get_waste_pile():
+            self.moves += 1
+            
+        for _ in self.deck.get_deck():
+            self.moves += 1
+            
+        for table in self.tables:
+            for _ in table.get_table():
+                self.moves += 1
+                
+        print(self.moves)
+        return self.moves
