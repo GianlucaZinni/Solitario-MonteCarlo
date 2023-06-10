@@ -18,5 +18,21 @@ class MySQLConnection:
         )
         return self.cnx
 
+    def database_exists(self):
+        cursor = self.cnx.cursor()
+        cursor.execute(f"SHOW DATABASES LIKE '{self.database}'")
+        return cursor.fetchone() is not None
+
+    def execute_sql_script(self, file_path):
+        with open(file_path, 'r') as file:
+            sql_script = file.read()
+        statements = sql_script.split(';')
+
+        cursor = self.cnx.cursor()
+        for statement in statements:
+            if statement.strip():
+                cursor.execute(statement)
+        self.cnx.commit()
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.cnx.close()
