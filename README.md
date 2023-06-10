@@ -77,7 +77,7 @@ Para el desarrollo de este proyecto se han utilizado las siguientes tecnologías
 
 ## Personas desarrolladoras del proyecto
 - Juan Pablo Arano
-- Sebastian Portillo
+- Sebastián Portillo
 - Sofía Alejandra Prieto
 - Gianluca Zinni
 
