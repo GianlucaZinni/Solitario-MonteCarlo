@@ -122,8 +122,8 @@ class Game:
 
             moves.card_follow_mouse(self)
 
-            self.message_display(str(self.timer), (352, 39))
-            self.message_display(str(self.moves), (561, 39))
+            self.message_display(str(self.timer), (639, 39))
+            self.message_display(str(self.moves), (853, 39))
             
             self.clock.tick(120)
             
@@ -136,7 +136,7 @@ class Game:
             for key, value in Strategies.items():
                 if self.idEstrategia == key:
                     value[0](self, moves)
-                    self.message_display(value[1], (455, 14))
+                    self.message_display(value[1], (490, 14))
                     break
 
             pygame.display.update()

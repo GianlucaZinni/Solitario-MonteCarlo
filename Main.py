@@ -37,8 +37,8 @@ def insert_results(results):
             cnx.commit()
 
 def main():
-    task_quantity = 207  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
-    batch_size = 21  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
+    task_quantity = 1  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
+    batch_size = 1  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
     processes = []
 
     if task_quantity < 3:
