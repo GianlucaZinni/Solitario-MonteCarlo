@@ -2,13 +2,12 @@ import multiprocessing
 import sys
 import time
 import json
-import mysql.connector
 import pandas as pd
 import matplotlib.pyplot as plt
 import psutil
+from func.Database import insert_results, create_database
+from func.Strategies import fetch_data, plot_victory_by_strategy, plot_duration_by_strategy, plot_victory_percentage_by_strategy 
 
-from multiprocessing import Lock
-from static.Database import MySQLConnection
 from conf.Game import Game
 from conf.Deck import Deck
 
@@ -36,86 +35,10 @@ def play_game(partida, idEstrategia):
     return game.results
 
 
-# Utilizacion de la base de datos para insertar miles de resultados a la vez
 def read_config():
     with open('static/dbConfig.json') as config_file:
         config = json.load(config_file)
     return config
-
-
-def insert_results(results_list):
-    # Leer la configuración desde el archivo config.json
-    config = read_config()
-
-    # Establecer la conexión a la base de datos
-    cnx = mysql.connector.connect(
-        host=config['DB_HOST'],
-        user=config['DB_USER'],
-        password=config['DB_PASSWORD']
-    )
-
-    # Verificar si la base de datos existe
-    cursor = cnx.cursor()
-    cursor.execute("SHOW DATABASES;")
-    databases = cursor.fetchall()
-    database_exists = False
-    for database in databases:
-        if config['DB_DATABASE'] in database:
-            database_exists = True
-            break
-
-    # Si la base de datos no existe, crearla
-    if not database_exists:
-        cursor.execute("CREATE DATABASE {}".format(config['DB_DATABASE']))
-        print("Base de datos '{}' creada.".format(config['DB_DATABASE']))
-        # Creación de las tablas correspondientes
-        # Leer el archivo SQL
-        file_path = "static/CreateSQL.sql"
-        with open(file_path, "r") as file:
-            sql_script = file.read()
-        # Ejecutar el script SQL
-        cursor.execute(sql_script, multi=True)
-        # Verificar y avanzar hasta el final de los resultados del cursor
-        while cursor.nextset():
-            pass
-        # Confirmar los cambios
-        cnx.commit()
-        print("Tablas correspondientes creadas.")
-
-    # Cerrar el cursor
-    cursor.close()
-
-    # Establecer la conexión a la base de datos
-    cnx = mysql.connector.connect(
-        host=config['DB_HOST'],
-        user=config['DB_USER'],
-        password=config['DB_PASSWORD'],
-        database=config['DB_DATABASE']
-    )
-
-    with cnx.cursor() as cursor:
-        insert_query = "INSERT INTO Games (victoria, duracion, movimientos, Mazo, Estrategia_idEstrategia) VALUES (%s, %s, %s, %s, %s)"
-        insert_values = []
-
-        for result in results_list:
-            duracion_str = result['duracion']
-            duracion = int(''.join(filter(str.isdigit, duracion_str)))
-
-            values = (
-                result['victoria'],
-                duracion,
-                result['movimientos'],
-                json.dumps(result['mazo']),  # Convertir la lista en una cadena JSON antes de insertarla en la base de datos
-                result['idEstrategia']
-            )
-            insert_values.append(values)
-
-        cursor.executemany(insert_query, insert_values)
-        cnx.commit()
-       
-    # Cerrar la conexión
-    cnx.close()
-
 
 
 def worker(partida, idEstrategia, results_queue):
@@ -237,76 +160,8 @@ def main(analyze_performance=False):
         plt.show()
 
 
-""" Estadísticas """
-
-def fetch_data():
-    # Leer la configuración desde el archivo config.json
-    config = read_config()
-
-    # Establecer la conexión a la base de datos
-    conn = mysql.connector.connect(
-        host=config['DB_HOST'],
-        user=config['DB_USER'],
-        password=config['DB_PASSWORD'],
-        database=config['DB_DATABASE']
-    )
-
-    # Ejecutar la consulta SQL para obtener los datos de la tabla Games
-    query = "SELECT Estrategia.Nombre AS estrategia, " \
-            "CASE WHEN Games.victoria THEN 1 ELSE 0 END AS victoria, " \
-            "Games.duracion " \
-            "FROM Games " \
-            "INNER JOIN Estrategia ON Games.Estrategia_idEstrategia = Estrategia.idEstrategia"
-    cursor = conn.cursor()
-    cursor.execute(query)
-    results = cursor.fetchall()
-
-    # Obtener los nombres de las columnas
-    columns = [column[0] for column in cursor.description]
-
-    # Crear un DataFrame a partir de los resultados y las columnas
-    df = pd.DataFrame.from_records(results, columns=columns)
-
-    # Cerrar el cursor y la conexión a la base de datos
-    cursor.close()
-    conn.close()
-
-    return df
-
-
-
-def plot_victory_by_strategy(df):
-    victory_count = df.groupby(['estrategia', 'victoria']).size().unstack(fill_value=0)
-    victory_count['1'] = victory_count[1]  # Renombrar la columna 1 a '1'
-    victory_count = victory_count.drop(columns=[0, 1])  # Eliminar las columnas 0 y 1
-    victory_count = victory_count.sort_values(by='1', ascending=False)  # Ordenar por la columna '1'
-    victory_count.plot(kind='bar', stacked=True)
-    plt.title("Victorias por estrategia")
-    plt.xlabel('Estrategia')
-    plt.ylabel('Cantidad de victorias')
-    plt.show()
-
-
-def plot_duration_by_strategy(df):
-    duration_avg = df.groupby('estrategia')['duracion'].mean()
-    duration_avg.plot(kind='bar')
-    plt.title("Duración promedio por estrategia")
-    plt.xlabel('Estrategia')
-    plt.ylabel('Duración promedio')
-    plt.show()
-
-
-def plot_victory_percentage_by_strategy(df):
-    victory_percentage = df.groupby('estrategia')['victoria'].mean() * 100
-    victory_percentage.plot(kind='bar')
-    plt.title("Porcentaje de victoria por estrategia")
-    plt.xlabel('Estrategia')
-    plt.ylabel('Porcentaje de victoria')
-    plt.show()
-
-
-
-if __name__ == "__main__":
+if __name__ == "_main_":
+    create_database()
     main(analyze_performance=True)
     df = fetch_data()
     plot_victory_by_strategy(df)
