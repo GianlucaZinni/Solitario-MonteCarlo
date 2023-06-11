@@ -332,7 +332,7 @@ class BasicMoves:
                 if dest_card is not None and dest_card.get_value() - 2 == card.get_value() and dest_card.get_color() == card.get_color():
                     for foundation in game.foundations:
                         foundation_card = foundation.get_top_card()
-                        if foundation_card is not None and foundation_card.get_value() == dest_card.get_value() - 1 and foundation_card.get_suit() != dest_card.get_suit():
+                        if foundation_card is not None and foundation_card.get_value() == dest_card.get_value() - 1 and foundation_card.get_color() != dest_card.get_color():
                             foundation.remove_card()
                             table.remove_card()
                             dest_table.add_new_card(foundation_card)
@@ -352,10 +352,10 @@ class BasicMoves:
                 if dest_card1 is not None and dest_card1.get_value() - 2 == card.get_value() and dest_card1.get_color() == card.get_color():
                     for foundation in game.foundations:
                         foundation_card1 = foundation.get_top_card()
-                        if foundation_card1 is not None and foundation_card1.get_value() == dest_card1.get_value() and foundation_card1.get_suit() != dest_card1.get_suit() and foundation_card1.get_value() != 1:
+                        if foundation_card1 is not None and foundation_card1.get_value() == dest_card1.get_value() and foundation_card1.get_color() != dest_card1.get_color() and foundation_card1.get_value() != 1:
                             for dest_table2 in game.tables:
                                 dest_card2 = dest_table2.bottom_card()
-                                if dest_card2 is not None and dest_card2.get_value() - 1 == foundation_card1.get_value() and dest_card2.get_suit() == foundation_card1.get_suit():
+                                if dest_card2 is not None and dest_card2.get_value() - 1 == foundation_card1.get_value() and dest_card2.get_color() != foundation_card1.get_color():
                                     foundation.remove_card()
                                     table.remove_card()
                                     foundation_card2 = foundation.get_top_card()
