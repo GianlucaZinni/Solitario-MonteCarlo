@@ -149,8 +149,8 @@ def main(analyze_performance=False):
         for process in processes:
             process.join()
 
-    # Inserta todos los resultados en la base de datos
-    insert_results([item for sublist in results_list for item in sublist])
+    # Inserta todos los resultados en la base de datos    
+    insert_results(results_list)
 
     if analyze_performance:
         finish_time = time.perf_counter()
