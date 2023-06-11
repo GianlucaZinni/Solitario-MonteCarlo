@@ -62,13 +62,22 @@ def insert_results(results_list):
     if not database_exists:
         cursor.execute("CREATE DATABASE {}".format(config['DB_DATABASE']))
         print("Base de datos '{}' creada.".format(config['DB_DATABASE']))
-        # Creación de las tablas correspondientes
-        MySQLConnection.execute_sql_script('static/CreateSQL.sql')
-        print("Tablas correspondientes creadas")
+        # Creación de las tablas correspondientes:
+        # Leer el archivo SQL
+        file_path = "static/CreateSQL.sql"
+        with open(file_path, "r") as file:
+            sql_script = file.read()
+        # Ejecutar el script SQL
+        cursor.execute(sql_script, multi=True)
+        # Verificar y avanzar hasta el final de los resultados del cursor
+        while cursor.nextset():
+            pass
+        # Confirmar los cambios
+        cnx.commit()
+        print("Tablas correspondientes creadas.")
 
-    # Cerrar el cursor y la conexión a la base de datos
+    # Cerrar el cursor
     cursor.close()
-    cnx.close()
 
     # Establecer una nueva conexión a la base de datos
     cnx = mysql.connector.connect(
@@ -94,6 +103,8 @@ def insert_results(results_list):
 def worker(partida, idEstrategia, results_list):
     result = play_game(partida, idEstrategia)
     results_list.append(result)
+
+    print("WORKER PRINT. RESULT: ", result)
 
 
 def main(analyze_performance=False):
