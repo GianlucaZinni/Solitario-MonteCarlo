@@ -23,7 +23,7 @@ def play_game(partida, idEstrategia):
     game.game_loop()
     results = game.results
     #print(results.get('victoria'), results.get('duracion'), results.get('movimientos'), results.get('mazo'), results.get('idEstrategia'))
-    # insert_results(game.results)
+    insert_results(game.results)
     print(f"Partida: {partida} - Estrategia: {strategies_output.get(results.get('idEstrategia'))} finalizada - Resultado: {victory_output.get(results.get('victoria'))}")
     if game.game_is_running is False:
         quit()
@@ -40,8 +40,8 @@ def insert_results(results):
             cnx.commit()
 
 def main():
-    task_quantity = 207  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
-    batch_size = 21  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
+    task_quantity = 0  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
+    batch_size = 5  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
     processes = []
 
     if task_quantity < 3:
