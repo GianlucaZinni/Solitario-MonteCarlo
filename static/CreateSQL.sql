@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Games` (
   `idGames` INT NOT NULL AUTO_INCREMENT,
   `victoria` TINYINT NOT NULL,
   `duracion` INT NOT NULL,
+  `movimientos` INT NOT NULL,
+  `Mazo` VARCHAR(500) NOT NULL,
   `Estrategia_idEstrategia` INT NOT NULL,
   PRIMARY KEY (`idGames`),
   INDEX `fk_Games_Estrategia_idx` (`Estrategia_idEstrategia` ASC) VISIBLE,
