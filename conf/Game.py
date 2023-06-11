@@ -19,6 +19,9 @@ class Game:
         self.screen = pygame.display.set_mode(self.window_size, RESIZABLE)
         self.backgroundImage = pygame.image.load("static/assets/layout/backgroundd.jpg")
 
+        # Sonidos
+        self.place_sound = pygame.mixer.Sound('static/assets/sounds/flip.wav')
+
         # Booleano para controlar el loop principal
         self.game_is_running = True
 
