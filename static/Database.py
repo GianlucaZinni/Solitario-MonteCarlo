@@ -1,8 +1,8 @@
 import mysql.connector
 import json
 class MySQLConnection:
-    def __init__(self, host, user, password, database):
-        with open('dbConfig.json', 'r') as f:
+    def __init__(self):
+        with open('static/dbConfig.json', 'r') as f:
             config = json.load(f)
         self.host = config.get('DB_HOST', 'localhost')
         self.user = config.get('DB_USER', 'root')

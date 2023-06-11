@@ -23,7 +23,7 @@ def play_game(partida, idEstrategia):
     game.game_loop()
     results = game.results
     #print(results.get('victoria'), results.get('duracion'), results.get('movimientos'), results.get('mazo'), results.get('idEstrategia'))
-    # insert_results(game.results)
+    insert_results(game.results)
     print(f"Partida: {partida} - Estrategia: {strategies_output.get(results.get('idEstrategia'))} finalizada - Resultado: {victory_output.get(results.get('victoria'))}")
     if game.game_is_running is False:
         quit()
