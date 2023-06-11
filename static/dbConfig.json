@@ -1,6 +1,6 @@
 {
-    "DB_HOST": "tu_host",
-    "DB_USER": "tu_usuario",
-    "DB_PASSWORD": "tu_contraseña",
-    "DB_DATABASE": "nombre_base_de_datos"
+    "DB_HOST": "127.0.0.1",
+    "DB_USER": "root",
+    "DB_PASSWORD": "1234",
+    "DB_DATABASE": "NeoSolitario"
 }

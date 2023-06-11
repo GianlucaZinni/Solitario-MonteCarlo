@@ -3,6 +3,7 @@ from static.Database import MySQLConnection
 from conf.Game import Game
 from conf.Deck import Deck
 import sys
+import time
 
 strategies_output = {
     1 : "El Marino",
@@ -23,7 +24,7 @@ def play_game(partida, idEstrategia):
     game.game_loop()
     results = game.results
     #print(results.get('victoria'), results.get('duracion'), results.get('movimientos'), results.get('mazo'), results.get('idEstrategia'))
-    # insert_results(game.results)
+    insert_results(game.results)
     print(f"Partida: {partida} - Estrategia: {strategies_output.get(results.get('idEstrategia'))} finalizada - Resultado: {victory_output.get(results.get('victoria'))}")
     if game.game_is_running is False:
         quit()
@@ -39,7 +40,11 @@ def insert_results(results):
             cursor.executemany(insert_query, [(result.victoria, result.duracion, result.movimientos, results.mazo, results.idEstrategia) for result in results])
             cnx.commit()
 
-def main():
+def main(analyze_performance=False):
+
+    if analyze_performance:
+        start_time = time.perf_counter()
+
     task_quantity = 1  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
     batch_size = 1  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
     processes = []
@@ -84,6 +89,13 @@ def main():
         for process in processes:
             process.join()
 
+
+    if analyze_performance:
+        finish_time = time.perf_counter()
+        print("\n Programa concurrente finalizado en {} segundos".format(finish_time - start_time))
+        print("---")
+
+
 if __name__ == "__main__":
-    main()
+    main(analyze_performance=True) 
     sys.exit()
