@@ -5,6 +5,7 @@ import json
 import mysql.connector
 import pandas as pd
 import matplotlib.pyplot as plt
+import psutil
 
 from multiprocessing import Lock
 from static.Database import MySQLConnection
@@ -123,13 +124,14 @@ def worker(partida, idEstrategia, results_queue):
 
 
 def main(analyze_performance=False):
+
     if analyze_performance:
-        start_time = time.perf_counter()
+        sequential_cpu_time = 0
+        sequential_memory_usage = 0
 
     # Utilizar una cola compartida para almacenar los resultados de los procesos
     manager = multiprocessing.Manager()
     results_queue = manager.Queue()
-    lock = Lock()
 
     task_quantity = 1  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
     batch_size = 1  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
@@ -151,6 +153,21 @@ def main(analyze_performance=False):
     target_count = task_quantity // 3  # Siendo 3 la cantidad de Estrategias
     count_1 = count_2 = count_3 = 0  # Contadores para cada valor
     partida = 1  # Variable contador para incrementar en cada ejecución
+
+    if analyze_performance:
+        # Ejecución secuencial
+        sequential_start_time = time.perf_counter()
+        sequential_results_list = []
+        for partida in range(1, task_quantity + 1):
+            idEstrategia = (partida - 1) % 3 + 1
+            result = play_game(partida, idEstrategia)
+            sequential_results_list.append(result)
+        sequential_end_time = time.perf_counter()
+        sequential_cpu_time = sequential_end_time - sequential_start_time
+        sequential_memory_usage = psutil.Process().memory_info().rss
+
+        parallel_start_time = time.perf_counter()
+
 
     for i in range(0, task_quantity, batch_size):
         for _ in range(i, min(i + batch_size, task_quantity)):
@@ -190,8 +207,34 @@ def main(analyze_performance=False):
 
     if analyze_performance:
         finish_time = time.perf_counter()
-        print("\n Programa concurrente finalizado en {} segundos".format(finish_time - start_time))
+        parallel_cpu_time = finish_time - parallel_start_time
+        parallel_memory_usage = psutil.Process().memory_info().rss
+
+        print("\nEjecución paralela:")
+        print("Tiempo de CPU: {:.2f} segundos".format(parallel_cpu_time))
+        print("Uso de memoria: {:.2f} MB".format(parallel_memory_usage / (1024 * 1024)))
         print("---")
+        print("Ejecución secuencial:")
+        print("Tiempo de CPU: {:.2f} segundos".format(sequential_cpu_time))
+        print("Uso de memoria: {:.2f} MB".format(sequential_memory_usage / (1024 * 1024)))
+        print("---")
+
+        # Gráfico de barras para comparar el tiempo de CPU
+        labels = ['Paralelo', 'Secuencial']
+        cpu_times = [parallel_cpu_time, sequential_cpu_time]
+        plt.bar(labels, cpu_times)
+        plt.xlabel('Tipo de ejecución')
+        plt.ylabel('Tiempo de CPU (segundos)')
+        plt.title('Comparación del tiempo de CPU entre ejecuciones paralela y secuencial')
+        plt.show()
+
+        # Gráfico de barras para comparar el uso de memoria
+        memory_usages = [parallel_memory_usage, sequential_memory_usage]
+        plt.bar(labels, memory_usages)
+        plt.xlabel('Tipo de ejecución')
+        plt.ylabel('Uso de memoria (MB)')
+        plt.title('Comparación del uso de memoria entre ejecuciones paralela y secuencial')
+        plt.show()
 
 
 """ Estadísticas """
