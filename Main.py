@@ -31,6 +31,9 @@ def play_game(partida, idEstrategia):
 # Utilizacion de la base de datos para insertar miles de resultados a la vez
 def insert_results(results):
     with MySQLConnection() as cnx:
+        if not cnx.database_exists():
+            # Crear la base de datos si no existe
+            cnx.execute_sql_script('static/CreateSQL.sql')
         with cnx.cursor() as cursor:
             insert_query = "INSERT INTO games (victoria, duracion, movimientos, mazo, idEstrategia) VALUES (%s, %s, %s, %s, %s)"
             cursor.executemany(insert_query, [(result.victoria, result.duracion, result.movimientos, results.mazo, results.idEstrategia) for result in results])
