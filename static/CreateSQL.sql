@@ -5,19 +5,15 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Schema neosolitario
 -- -----------------------------------------------------
 
--- -----------------------------------------------------
--- Schema mydb
--- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
-USE `mydb` ;
+USE `neosolitario` ;
 
 -- -----------------------------------------------------
--- Table `mydb`.`Estrategia`
+-- Table `neosolitario`.`Estrategia`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`Estrategia` (
+CREATE TABLE IF NOT EXISTS `neosolitario`.`Estrategia` (
   `idEstrategia` INT NOT NULL,
   `Nombre` VARCHAR(45) NOT NULL,
   `Descripcion` VARCHAR(200) NULL,
@@ -26,9 +22,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`Games`
+-- Table `neosolitario`.`Games`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`Games` (
+CREATE TABLE IF NOT EXISTS `neosolitario`.`Games` (
   `idGames` INT NOT NULL AUTO_INCREMENT,
   `victoria` TINYINT NOT NULL,
   `duracion` INT NOT NULL,
@@ -39,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Games` (
   INDEX `fk_Games_Estrategia_idx` (`Estrategia_idEstrategia` ASC) VISIBLE,
   CONSTRAINT `fk_Games_Estrategia`
     FOREIGN KEY (`Estrategia_idEstrategia`)
-    REFERENCES `mydb`.`Estrategia` (`idEstrategia`)
+    REFERENCES `neosolitario`.`Estrategia` (`idEstrategia`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;

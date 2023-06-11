@@ -1,9 +1,11 @@
 import multiprocessing
 from static.Database import MySQLConnection
+import mysql.connector
 from conf.Game import Game
 from conf.Deck import Deck
 import sys
 import time
+import json
 
 strategies_output = {
     1 : "El Marino",
@@ -30,19 +32,62 @@ def play_game(partida, idEstrategia):
 
 
 # Utilizacion de la base de datos para insertar miles de resultados a la vez
-def insert_results(results_list):
-    with MySQLConnection() as cnx:
-        if not cnx.database_exists():
-            # Crear la base de datos si no existe
-            cnx.execute_sql_script('static/CreateSQL.sql')
-        with cnx.cursor() as cursor:
-            insert_query = "INSERT INTO games (victoria, duracion, movimientos, mazo, idEstrategia) VALUES (%s, %s, %s, %s, %s)"
-            insert_values = []
-            for results in results_list:
-                insert_values.extend([(result['victoria'], result['duracion'], result['movimientos'], result['mazo'], result['idEstrategia']) for result in results])
-            cursor.executemany(insert_query, insert_values)
-            cnx.commit()
+def read_config():
+    with open('static/dbConfig.json') as config_file:
+        config = json.load(config_file)
+    return config
 
+def insert_results(results_list):
+    # Leer la configuración desde el archivo config.json
+    config = read_config()
+
+    # Establecer la conexión a la base de datos
+    cnx = mysql.connector.connect(
+        host=config['DB_HOST'],
+        user=config['DB_USER'],
+        password=config['DB_PASSWORD']
+    )
+
+    # Verificar si la base de datos existe
+    cursor = cnx.cursor()
+    cursor.execute("SHOW DATABASES;")
+    databases = cursor.fetchall()
+    database_exists = False
+    for database in databases:
+        if config['DB_DATABASE'] in database:
+            database_exists = True
+            break
+
+    # Si la base de datos no existe, crearla
+    if not database_exists:
+        cursor.execute("CREATE DATABASE {}".format(config['DB_DATABASE']))
+        print("Base de datos '{}' creada.".format(config['DB_DATABASE']))
+        # Creación de las tablas correspondientes
+        MySQLConnection.execute_sql_script('static/CreateSQL.sql')
+        print("Tablas correspondientes creadas")
+
+    # Cerrar el cursor y la conexión a la base de datos
+    cursor.close()
+    cnx.close()
+
+    # Establecer una nueva conexión a la base de datos
+    cnx = mysql.connector.connect(
+        host=config['DB_HOST'],
+        user=config['DB_USER'],
+        password=config['DB_PASSWORD'],
+        database=config['DB_DATABASE']
+    )
+
+    with cnx.cursor() as cursor:
+        insert_query = "INSERT INTO games (victoria, duracion, movimientos, mazo, idEstrategia) VALUES (%s, %s, %s, %s, %s)"
+        insert_values = []
+        for results in results_list:
+            insert_values.extend([(result['victoria'], result['duracion'], result['movimientos'], result['mazo'], result['idEstrategia']) for result in results])
+        cursor.executemany(insert_query, insert_values)
+        cnx.commit()
+
+    # Cerrar la conexión
+    cnx.close()
 
 
 # Función que inicia el juego y luego agrega los resultados a results_list
