@@ -15,7 +15,6 @@ victory_output = {
     True: "Ganó"
 }
 
-
 def play_game(partida, idEstrategia):
     deck = Deck()
     deck.shuffle()
@@ -23,27 +22,43 @@ def play_game(partida, idEstrategia):
     game = Game(partida, idEstrategia, deck)
     game.game_loop()
     results = game.results
-    #print(results.get('victoria'), results.get('duracion'), results.get('movimientos'), results.get('mazo'), results.get('idEstrategia'))
-    insert_results(game.results)
+
     print(f"Partida: {partida} - Estrategia: {strategies_output.get(results.get('idEstrategia'))} finalizada - Resultado: {victory_output.get(results.get('victoria'))}")
     if game.game_is_running is False:
         quit()
-        
+    return game.results
+
+
 # Utilizacion de la base de datos para insertar miles de resultados a la vez
-def insert_results(results):
+def insert_results(results_list):
     with MySQLConnection() as cnx:
         if not cnx.database_exists():
             # Crear la base de datos si no existe
             cnx.execute_sql_script('static/CreateSQL.sql')
         with cnx.cursor() as cursor:
             insert_query = "INSERT INTO games (victoria, duracion, movimientos, mazo, idEstrategia) VALUES (%s, %s, %s, %s, %s)"
-            cursor.executemany(insert_query, [(result.victoria, result.duracion, result.movimientos, results.mazo, results.idEstrategia) for result in results])
+            insert_values = []
+            for results in results_list:
+                insert_values.extend([(result['victoria'], result['duracion'], result['movimientos'], result['mazo'], result['idEstrategia']) for result in results])
+            cursor.executemany(insert_query, insert_values)
             cnx.commit()
+
+
+
+# Función que inicia el juego y luego agrega los resultados a results_list
+def worker(partida, idEstrategia, results_list):
+    result = play_game(partida, idEstrategia)
+    results_list.append(result)
+
 
 def main(analyze_performance=False):
 
     if analyze_performance:
         start_time = time.perf_counter()
+
+    # Lista compartida donde cada proceso agrega su resultado
+    manager = multiprocessing.Manager()
+    results_list = manager.list()
 
     task_quantity = 1  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
     batch_size = 1  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
@@ -80,7 +95,7 @@ def main(analyze_performance=False):
             elif idEstrategia == 3:
                 count_3 += 1
                 
-            process = multiprocessing.Process(target=play_game, args=(partida, idEstrategia))
+            process = multiprocessing.Process(target=worker, args=(partida, idEstrategia, results_list))
             processes.append(process)
             process.start()
             partida += 1  # Incrementar el valor de x en cada ejecución
@@ -89,6 +104,8 @@ def main(analyze_performance=False):
         for process in processes:
             process.join()
 
+    # Inserta todos los resultados en la base de datos
+    insert_results([item for sublist in results_list for item in sublist])
 
     if analyze_performance:
         finish_time = time.perf_counter()
