@@ -1,17 +1,20 @@
 import multiprocessing
-from static.Database import MySQLConnection
-import mysql.connector
-from conf.Game import Game
-from conf.Deck import Deck
 import sys
 import time
 import json
+import mysql.connector
+
+from multiprocessing import Lock
+from static.Database import MySQLConnection
+from conf.Game import Game
+from conf.Deck import Deck
 
 strategies_output = {
-    1 : "El Marino",
-    2 : "La Socialista",
-    3 : "El Bombero"
+    1: "El Marino",
+    2: "La Socialista",
+    3: "El Bombero"
 }
+
 victory_output = {
     False: "Perdió",
     True: "Ganó"
@@ -22,12 +25,11 @@ def play_game(partida, idEstrategia):
     deck.shuffle()
 
     game = Game(partida, idEstrategia, deck)
+
     game.game_loop()
     results = game.results
 
     print(f"Partida: {partida} - Estrategia: {strategies_output.get(results.get('idEstrategia'))} finalizada - Resultado: {victory_output.get(results.get('victoria'))}")
-    if game.game_is_running is False:
-        quit()
     return game.results
 
 
@@ -36,6 +38,7 @@ def read_config():
     with open('static/dbConfig.json') as config_file:
         config = json.load(config_file)
     return config
+
 
 def insert_results(results_list):
     # Leer la configuración desde el archivo config.json
@@ -62,7 +65,7 @@ def insert_results(results_list):
     if not database_exists:
         cursor.execute("CREATE DATABASE {}".format(config['DB_DATABASE']))
         print("Base de datos '{}' creada.".format(config['DB_DATABASE']))
-        # Creación de las tablas correspondientes:
+        # Creación de las tablas correspondientes
         # Leer el archivo SQL
         file_path = "static/CreateSQL.sql"
         with open(file_path, "r") as file:
@@ -79,7 +82,7 @@ def insert_results(results_list):
     # Cerrar el cursor
     cursor.close()
 
-    # Establecer una nueva conexión a la base de datos
+    # Establecer la conexión a la base de datos
     cnx = mysql.connector.connect(
         host=config['DB_HOST'],
         user=config['DB_USER'],
@@ -88,41 +91,51 @@ def insert_results(results_list):
     )
 
     with cnx.cursor() as cursor:
-        insert_query = "INSERT INTO games (victoria, duracion, movimientos, mazo, idEstrategia) VALUES (%s, %s, %s, %s, %s)"
+        insert_query = "INSERT INTO Games (victoria, duracion, movimientos, Mazo, Estrategia_idEstrategia) VALUES (%s, %s, %s, %s, %s)"
         insert_values = []
-        for results in results_list:
-            insert_values.extend([(result['victoria'], result['duracion'], result['movimientos'], result['mazo'], result['idEstrategia']) for result in results])
+
+        for result in results_list:
+            duracion_str = result['duracion']
+            duracion = int(''.join(filter(str.isdigit, duracion_str)))
+
+            values = (
+                result['victoria'],
+                duracion,
+                result['movimientos'],
+                json.dumps(result['mazo']),  # Convertir la lista en una cadena JSON antes de insertarla en la base de datos
+                result['idEstrategia']
+            )
+            insert_values.append(values)
+
         cursor.executemany(insert_query, insert_values)
         cnx.commit()
-
+       
     # Cerrar la conexión
     cnx.close()
 
 
-# Función que inicia el juego y luego agrega los resultados a results_list
-def worker(partida, idEstrategia, results_list):
-    result = play_game(partida, idEstrategia)
-    results_list.append(result)
 
-    print("WORKER PRINT. RESULT: ", result)
+def worker(partida, idEstrategia, results_queue):
+    result = play_game(partida, idEstrategia)
+    results_queue.put(result)
 
 
 def main(analyze_performance=False):
-
     if analyze_performance:
         start_time = time.perf_counter()
 
-    # Lista compartida donde cada proceso agrega su resultado
+    # Utilizar una cola compartida para almacenar los resultados de los procesos
     manager = multiprocessing.Manager()
-    results_list = manager.list()
+    results_queue = manager.Queue()
+    lock = Lock()
 
     task_quantity = 1  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
     batch_size = 1  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
     processes = []
 
     if task_quantity < 3:
-        task_quantity = 3 
-        
+        task_quantity = 3
+
     if batch_size <= 0 or batch_size > task_quantity:
         batch_size = task_quantity
 
@@ -136,13 +149,16 @@ def main(analyze_performance=False):
     target_count = task_quantity // 3  # Siendo 3 la cantidad de Estrategias
     count_1 = count_2 = count_3 = 0  # Contadores para cada valor
     partida = 1  # Variable contador para incrementar en cada ejecución
+
     for i in range(0, task_quantity, batch_size):
         for _ in range(i, min(i + batch_size, task_quantity)):
             # Generar un idEstrategia que aún no se haya utilizado la cantidad target_count de veces
             idEstrategia = (count_1 + count_2 + count_3) % 3 + 1
-            while (idEstrategia == 1 and count_1 >= target_count) or (idEstrategia == 2 and count_2 >= target_count) or (idEstrategia == 3 and count_3 >= target_count):
+            while (idEstrategia == 1 and count_1 >= target_count) or (
+                    idEstrategia == 2 and count_2 >= target_count) or (
+                    idEstrategia == 3 and count_3 >= target_count):
                 idEstrategia = (count_1 + count_2 + count_3) % 3 + 1
-            
+
             # Incrementar el contador correspondiente
             if idEstrategia == 1:
                 count_1 += 1
@@ -150,17 +166,24 @@ def main(analyze_performance=False):
                 count_2 += 1
             elif idEstrategia == 3:
                 count_3 += 1
-                
-            process = multiprocessing.Process(target=worker, args=(partida, idEstrategia, results_list))
+
+            process = multiprocessing.Process(target=worker, args=(partida, idEstrategia, results_queue))
             processes.append(process)
             process.start()
             partida += 1  # Incrementar el valor de x en cada ejecución
-            
-        # Esperar a que los procesos terminen en el orden correcto
-        for process in processes:
-            process.join()
 
-    # Inserta todos los resultados en la base de datos    
+    # Esperar a que los procesos terminen en el orden correcto
+    for process in processes:
+        process.join()
+
+    # Extraer los resultados de la cola
+    results_list = []
+    while not results_queue.empty():
+        result = results_queue.get()
+        results_list.append(result)
+
+    # Inserta todos los resultados en la base de datos
+    print("RESULTS LIST: ", results_list)
     insert_results(results_list)
 
     if analyze_performance:
@@ -170,5 +193,5 @@ def main(analyze_performance=False):
 
 
 if __name__ == "__main__":
-    main(analyze_performance=True) 
+    main(analyze_performance=True)
     sys.exit()

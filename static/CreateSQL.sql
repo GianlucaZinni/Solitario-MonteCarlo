@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `neosolitario`.`Games` (
   `victoria` TINYINT NOT NULL,
   `duracion` INT NOT NULL,
   `movimientos` INT NOT NULL,
-  `Mazo` VARCHAR(500) NOT NULL,
+  `Mazo` VARCHAR(5000) NOT NULL,
   `Estrategia_idEstrategia` INT NOT NULL,
   PRIMARY KEY (`idGames`),
   INDEX `fk_Games_Estrategia_idx` (`Estrategia_idEstrategia` ASC) VISIBLE,

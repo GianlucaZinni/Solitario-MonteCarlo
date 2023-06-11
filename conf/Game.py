@@ -142,8 +142,8 @@ class Game:
                     self.message_display(value[1], (490, 14))
                     break
 
-            pygame.display.update()
             self.results = self.game_result()
+            pygame.display.update()
 
     def game_result(self):
         if self.check_all_cards_face_up():
