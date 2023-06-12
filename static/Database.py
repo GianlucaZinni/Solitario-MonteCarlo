@@ -1,5 +1,5 @@
 import mysql.connector
-import json
+import json, sys
 
 class MySQLConnection:
     def __init__(self):
@@ -52,12 +52,20 @@ def create_database():
     # Leer la configuración desde el archivo config.json
     config = read_config()
 
-    # Establecer la conexión a la base de datos
-    cnx = mysql.connector.connect(
-        host=config['DB_HOST'],
-        user=config['DB_USER'],
-        password=config['DB_PASSWORD']
-    )
+    try:
+        # Establecer la conexión a la base de datos
+        cnx = mysql.connector.connect(
+            host=config['DB_HOST'],
+            user=config['DB_USER'],
+            password=config['DB_PASSWORD']
+        )
+        
+    except mysql.connector.Error as e:
+        if e.errno == mysql.connector.errorcode.ER_ACCESS_DENIED_ERROR:
+            print('No se pudo establecer la conexión a la base de datos debido a que las credenciales son incorrectas.')
+        else:
+            print('No se pudo establecer la conexión a la base de datos.')
+        sys.exit(1)
 
     # Verificar si la base de datos existe
     cursor = cnx.cursor()

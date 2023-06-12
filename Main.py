@@ -149,7 +149,7 @@ def main(analyze_performance=False):
 
 if __name__ == "__main__":
     create_database()
-    main(analyze_performance=False)
+    main(analyze_performance=True)
     df = fetch_data()
     plot_victory_by_strategy(df)
     plot_duration_by_strategy(df)
