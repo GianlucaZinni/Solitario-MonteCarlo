@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 class Strategy(ABC):
     def __init__(self):
         self.primer_llamado = True
-        self.primer_movimiento = True
 
     @abstractmethod
     def call(self):
@@ -56,12 +55,12 @@ class ElMarino(Strategy):
             check_if_moved = False
         
         game.check_if_lock.append(check_if_moved)
-        last_twentyfour = game.check_if_lock[-24:]
-        if not self.primer_movimiento and True not in last_twentyfour:
+        if True in game.check_if_lock:
+            game.check_if_lock.clear()
+            return
+        if True not in game.check_if_lock and len(game.check_if_lock) >= 24:
             game.result_counter = 5
             return
-        else:
-            self.primer_movimiento = False
 
 class LaSocialista(Strategy): # Primero intenta entre mismas tables y despues foundation
     
@@ -103,12 +102,12 @@ class LaSocialista(Strategy): # Primero intenta entre mismas tables y despues fo
             check_if_moved = False
         
         game.check_if_lock.append(check_if_moved)
-        last_twentyfour = game.check_if_lock[-24:]
-        if not self.primer_movimiento and True not in last_twentyfour:
+        if True in game.check_if_lock:
+            game.check_if_lock.clear()
+            return
+        if True not in game.check_if_lock and len(game.check_if_lock) >= 24:
             game.result_counter = 5
             return
-        else:
-            self.primer_movimiento = False
 
 class ElBombero(Strategy): # Primero intenta al foundation y después entre las tables
 
@@ -150,9 +149,9 @@ class ElBombero(Strategy): # Primero intenta al foundation y después entre las 
             check_if_moved = False
         
         game.check_if_lock.append(check_if_moved)
-        last_twentyfour = game.check_if_lock[-24:]
-        if not self.primer_movimiento and True not in last_twentyfour:
+        if True in game.check_if_lock:
+            game.check_if_lock.clear()
+            return
+        if True not in game.check_if_lock and len(game.check_if_lock) >= 24:
             game.result_counter = 5
             return
-        else:
-            self.primer_movimiento = False

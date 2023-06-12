@@ -378,7 +378,6 @@ class BasicMoves:
                             moved = True
                             game.moves += 2
                             time.sleep(0.2)
-                            print('foundation to table and table to table')
                             break
         return moved
 
@@ -404,7 +403,6 @@ class BasicMoves:
                                     moved = True
                                     game.moves += 3
                                     time.sleep(0.2)
-                                    print('foundation to table x2 and table to table')
                                     break
         return moved
     
@@ -423,7 +421,6 @@ class BasicMoves:
                         moved = True
                         game.moves += 2
                         time.sleep(0.2)
-                        print('se ejecuto prev to foundation')
                         break
         return moved
     
@@ -443,7 +440,6 @@ class BasicMoves:
                         moved = True
                         game.moves += 2
                         time.sleep(0.2)
-                        print('se ejecuto foundation to table deck to table')
                         break
         return moved
         

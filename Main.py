@@ -1,4 +1,5 @@
 import multiprocessing
+from multiprocessing import freeze_support
 import sys
 import time
 import matplotlib.pyplot as plt
@@ -37,7 +38,7 @@ def main(analyze_performance=False):
         sequential_cpu_time = 0
         sequential_memory_usage = 0
 
-    task_quantity = 5  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
+    task_quantity = 3  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
     batch_size = 3  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
 
     if task_quantity < 3:
@@ -127,6 +128,7 @@ def main(analyze_performance=False):
 
 
 if __name__ == "__main__":
+    freeze_support()
     create_database()
     main(analyze_performance=True)
     df = fetch_data()
