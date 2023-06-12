@@ -5,8 +5,8 @@ import json
 import pandas as pd
 import matplotlib.pyplot as plt
 import psutil
-from func.Database import insert_results, create_database
-from func.Strategies import fetch_data, plot_victory_by_strategy, plot_duration_by_strategy, plot_victory_percentage_by_strategy 
+from static.Database import insert_results, create_database
+from func.Statistics import fetch_data, plot_victory_by_strategy, plot_duration_by_strategy, plot_victory_percentage_by_strategy
 
 from conf.Game import Game
 from conf.Deck import Deck
@@ -33,12 +33,6 @@ def play_game(partida, idEstrategia):
 
     print(f"Partida: {partida} - Estrategia: {strategies_output.get(results.get('idEstrategia'))} finalizada - Resultado: {victory_output.get(results.get('victoria'))}")
     return game.results
-
-
-def read_config():
-    with open('static/dbConfig.json') as config_file:
-        config = json.load(config_file)
-    return config
 
 
 def worker(partida, idEstrategia, results_queue):
@@ -160,7 +154,7 @@ def main(analyze_performance=False):
         plt.show()
 
 
-if __name__ == "_main_":
+if __name__ == "__main__":
     create_database()
     main(analyze_performance=True)
     df = fetch_data()

@@ -1,4 +1,4 @@
-from Main import read_config
+from static.Database import read_config
 import mysql.connector
 import pandas as pd
 import matplotlib.pyplot as plt
