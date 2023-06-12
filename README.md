@@ -52,7 +52,7 @@
 
 ## Estado del proyecto
 <p align="justify">
-  El proyecto se encuentra en un 80% de su desarrollo. Nos encontramos ajustando algunas configuraciones para el correcto funcionamiento de la base de datos. Respecto al juego como tal, es capaz de jugar de manera autónoma y gestionar la concurrencia de varias partidas al mismo tiempo. Queda pendiente el manejo de estrategias específicas y la recolección de los datos obtenidos para proporcionar las estadísticas adecuadas que justifiquen el uso del método Monte Carlo en esta implementación.
+  El proyecto se encuentra en un 100% de su desarrollo. 
 </p>
 
 ## Demostración de funciones y aplicaciones
