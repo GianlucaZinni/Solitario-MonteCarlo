@@ -37,8 +37,13 @@ def main(analyze_performance=False):
         sequential_cpu_time = 0
         sequential_memory_usage = 0
 
+    # Utilizar una cola compartida para almacenar los resultados de los procesos
+    manager = multiprocessing.Manager()
+    results_queue = manager.Queue()
+
     task_quantity = 1  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
-    batch_size = 3  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
+    batch_size = 1  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
+    processes = []
 
     if task_quantity < 3:
         task_quantity = 3

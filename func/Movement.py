@@ -36,7 +36,6 @@ class BasicMoves:
             if len(game.deck.get_deck()) <= 0:
                 game.deck.add_cards(list(reversed(game.waste.get_waste_pile().copy())))
                 game.waste.empty()
-                game.shuffle_sound.play()
             else:
                 game.moves += 1
                 game.waste.add_card(game.deck.remove_card())
@@ -323,7 +322,7 @@ class BasicMoves:
                             break
         return moved
     
-    def foundation_to_table_and_table_to_table(self, game, card, table, moved):
+    def foundation_to_table_and_table_to_table(self, game, card, table, moved): # Funciona
         
         prev_card = table.prev_card()
         if prev_card == card or not prev_card.is_front_showing():
@@ -340,6 +339,7 @@ class BasicMoves:
                             moved = True
                             game.moves += 2
                             time.sleep(0.2)
+                            print('foundation to table and table to table')
                             break
         return moved
 
@@ -365,10 +365,11 @@ class BasicMoves:
                                     moved = True
                                     game.moves += 3
                                     time.sleep(0.2)
+                                    print('foundation to table x2 and table to table')
                                     break
         return moved
     
-    def prev_to_foundation(self, game, card, table, moved):
+    def prev_to_foundation(self, game, card, table, moved): # Funciona
         prev_card = table.prev_card()
         for dest_table in game.tables:
             dest_card = dest_table.bottom_card()
@@ -383,10 +384,11 @@ class BasicMoves:
                         moved = True
                         game.moves += 2
                         time.sleep(0.2)
+                        print('se ejecuto prev to foundation')
                         break
         return moved
     
-    def foundation_to_table_deck_to_table(self, game, waste_card, moved):
+    def foundation_to_table_deck_to_table(self, game, waste_card, moved): # Funciona
         
         for foundation in game.foundations:
             foundation_card = foundation.get_top_card()
@@ -402,6 +404,7 @@ class BasicMoves:
                         moved = True
                         game.moves += 2
                         time.sleep(0.2)
+                        print('se ejecuto foundation to table deck to table')
                         break
         return moved
         
