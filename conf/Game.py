@@ -191,6 +191,5 @@ class Game:
         for table in self.tables:
             for _ in table.get_table():
                 self.moves += 1
-                
-        print(self.moves)
+
         return self.moves

@@ -1,8 +1,4 @@
-import multiprocessing
-import sys
-import time
-import json
-import pandas as pd
+import multiprocessing, sys, time
 import matplotlib.pyplot as plt
 import psutil
 from static.Database import insert_results, create_database
@@ -12,12 +8,9 @@ from conf.Game import Game
 from conf.Deck import Deck
 
 strategies_output = {
-    1: "El Marino",
-    2: "La Socialista",
-    3: "El Bombero"
-}
-
-victory_output = {
+    '1': "El Marino",
+    '2': "La Socialista",
+    '3': "El Bombero",
     False: "Perdió",
     True: "Ganó"
 }
@@ -31,7 +24,7 @@ def play_game(partida, idEstrategia):
     game.game_loop()
     results = game.results
 
-    print(f"Partida: {partida} - Estrategia: {strategies_output.get(results.get('idEstrategia'))} finalizada - Resultado: {victory_output.get(results.get('victoria'))}")
+    print(f"Partida: {partida} - Estrategia: {strategies_output.get(str(results.get('idEstrategia')))} finalizada - Resultado: {strategies_output.get(results.get('victoria'))}")
     return game.results
 
 
@@ -156,7 +149,7 @@ def main(analyze_performance=False):
 
 if __name__ == "__main__":
     create_database()
-    main(analyze_performance=True)
+    main(analyze_performance=False)
     df = fetch_data()
     plot_victory_by_strategy(df)
     plot_duration_by_strategy(df)

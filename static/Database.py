@@ -10,38 +10,43 @@ class MySQLConnection:
         self.password = config.get('DB_PASSWORD', '')
         self.database = config.get('DB_DATABASE', 'mi_base_de_datos')
 
-    def __enter__(self):
+    def connect(self):
         self.cnx = mysql.connector.connect(
             host=self.host,
             user=self.user,
             password=self.password,
             database=self.database
         )
-        return self.cnx
+        print("Conexión a la base de datos establecida.")
 
-    def database_exists(self):
+    def disconnect(self):
+        self.cnx.close()
+        print("Se ha desconectado la base de datos.")
+
+    def execute_sql_script(self, sql_script, values=None):
         cursor = self.cnx.cursor()
-        cursor.execute(f"SHOW DATABASES LIKE '{self.database}'")
-        return cursor.fetchone() is not None
+        # Ejecutar el script SQL
+        if values:
+            cursor.executemany(sql_script, values)
+        else:
+            cursor.execute(sql_script)
+        print("Script SQL ejecutado correctamente.")
 
-    def execute_sql_script(self, file_path):
-        with open(file_path, 'r') as file:
-            sql_script = file.read()
-        statements = sql_script.split(';')
-
-        cursor = self.cnx.cursor()
-        for statement in statements:
-            if statement.strip():
-                cursor.execute(statement)
         self.cnx.commit()
 
+    def __enter__(self):
+        self.connect()
+        return self
+
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.cnx.close()
+        self.disconnect()
+
 
 def read_config():
     with open('static/dbConfig.json') as config_file:
         config = json.load(config_file)
     return config
+
 
 def create_database():
     # Leer la configuración desde el archivo config.json
@@ -81,21 +86,10 @@ def create_database():
 
     # Cerrar el cursor
     cursor.close()
-    
+
 
 def insert_results(results_list):
-    # Leer la configuración desde el archivo config.json
-    config = read_config()
-
-    # Establecer la conexión a la base de datos
-    cnx = mysql.connector.connect(
-        host=config['DB_HOST'],
-        user=config['DB_USER'],
-        password=config['DB_PASSWORD'],
-        database=config['DB_DATABASE']
-    )
-
-    with cnx.cursor() as cursor:
+    with MySQLConnection() as db:
         insert_query = "INSERT INTO Games (victoria, duracion, movimientos, Mazo, Estrategia_idEstrategia) VALUES (%s, %s, %s, %s, %s)"
         insert_values = []
 
@@ -112,8 +106,4 @@ def insert_results(results_list):
             )
             insert_values.append(values)
 
-        cursor.executemany(insert_query, insert_values)
-        cnx.commit()
-
-    # Cerrar la conexión
-    cnx.close()
+        db.execute_sql_script(insert_query, insert_values)

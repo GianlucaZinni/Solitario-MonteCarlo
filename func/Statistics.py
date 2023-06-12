@@ -1,39 +1,31 @@
-from static.Database import read_config
-import mysql.connector
+from static.Database import MySQLConnection
 import pandas as pd
 import matplotlib.pyplot as plt
 
 def fetch_data():
-    # Leer la configuración desde el archivo config.json
-    config = read_config()
 
     # Establecer la conexión a la base de datos
-    conn = mysql.connector.connect(
-        host=config['DB_HOST'],
-        user=config['DB_USER'],
-        password=config['DB_PASSWORD'],
-        database=config['DB_DATABASE']
-    )
+    with MySQLConnection() as db:
+        conn = db.cnx
 
-    # Ejecutar la consulta SQL para obtener los datos de la tabla Games
-    query = "SELECT Estrategia.Nombre AS estrategia, " \
-            "CASE WHEN Games.victoria THEN 1 ELSE 0 END AS victoria, " \
-            "Games.duracion " \
-            "FROM Games " \
-            "INNER JOIN Estrategia ON Games.Estrategia_idEstrategia = Estrategia.idEstrategia"
-    cursor = conn.cursor()
-    cursor.execute(query)
-    results = cursor.fetchall()
+        # Ejecutar la consulta SQL para obtener los datos de la tabla Games
+        query = "SELECT Estrategia.Nombre AS estrategia, " \
+                "CASE WHEN Games.victoria THEN 1 ELSE 0 END AS victoria, " \
+                "Games.duracion " \
+                "FROM Games " \
+                "INNER JOIN Estrategia ON Games.Estrategia_idEstrategia = Estrategia.idEstrategia"
+        cursor = conn.cursor()
+        cursor.execute(query)
+        results = cursor.fetchall()
 
-    # Obtener los nombres de las columnas
-    columns = [column[0] for column in cursor.description]
+        # Obtener los nombres de las columnas
+        columns = [column[0] for column in cursor.description]
 
-    # Crear un DataFrame a partir de los resultados y las columnas
-    df = pd.DataFrame.from_records(results, columns=columns)
+        # Crear un DataFrame a partir de los resultados y las columnas
+        df = pd.DataFrame.from_records(results, columns=columns)
 
-    # Cerrar el cursor y la conexión a la base de datos
-    cursor.close()
-    conn.close()
+        # Cerrar el cursor (se cierra automáticamente al salir del contexto "with")
+        cursor.close()
 
     return df
 
