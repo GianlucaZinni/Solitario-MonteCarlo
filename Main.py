@@ -17,15 +17,6 @@ strategies_output = {
     True: "Ganó"
 }
 
-<<<<<<< HEAD
-# Utilizacion de la base de datos para insertar miles de resultados a la vez
-def insert_results(db_config, results):
-    with MySQLConnection() as cnx:
-        with cnx.cursor() as cursor:
-            insert_query = "INSERT INTO games (victoria, duracion, idEstrategia) VALUES (%s, %s, %s)"
-            cursor.executemany(insert_query, [(result.win, result.duration, result.idEstrategia) for result in results])
-            cnx.commit()
-
 def main():
     task_quantity = 1000
     results = []
@@ -43,7 +34,7 @@ def main():
     print(f"Se completaron {len(results)} tareas.")
     # Ejecucion de funcion que inserta los 1000 resultados en la DB
     insert_results(results)
-=======
+
 def play_game(partida, idEstrategia):
     deck = Deck()
     deck.shuffle()
@@ -152,8 +143,6 @@ def main(analyze_performance=False):
         plt.ylabel('Uso de memoria (MB)')
         plt.title('Comparación del uso de memoria entre ejecuciones paralela y secuencial')
         plt.show()
-
->>>>>>> new-realease
 
 if __name__ == "__main__":
     freeze_support()
