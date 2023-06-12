@@ -1,9 +1,10 @@
-import multiprocessing, sys, time
+import multiprocessing
+import sys
+import time
 import matplotlib.pyplot as plt
 import psutil
 from static.Database import insert_results, create_database
 from func.Statistics import fetch_data, plot_victory_by_strategy, plot_duration_by_strategy, plot_victory_percentage_by_strategy
-
 from conf.Game import Game
 from conf.Deck import Deck
 
@@ -27,14 +28,11 @@ def play_game(partida, idEstrategia):
     print(f"Partida: {partida} - Estrategia: {strategies_output.get(str(results.get('idEstrategia')))} finalizada - Resultado: {strategies_output.get(results.get('victoria'))}")
     return game.results
 
-
-def worker(partida, idEstrategia, results_queue):
-    result = play_game(partida, idEstrategia)
-    results_queue.put(result)
-
+def worker(args):
+    partida, idEstrategia = args
+    return play_game(partida, idEstrategia)
 
 def main(analyze_performance=False):
-
     if analyze_performance:
         sequential_cpu_time = 0
         sequential_memory_usage = 0
@@ -43,8 +41,8 @@ def main(analyze_performance=False):
     manager = multiprocessing.Manager()
     results_queue = manager.Queue()
 
-    task_quantity = 3  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
-    batch_size = 3  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
+    task_quantity = 1  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
+    batch_size = 1  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
     processes = []
 
     if task_quantity < 3:
@@ -78,41 +76,27 @@ def main(analyze_performance=False):
 
         parallel_start_time = time.perf_counter()
 
+    pool = multiprocessing.Pool(processes=batch_size)
 
-    for i in range(0, task_quantity, batch_size):
-        for _ in range(i, min(i + batch_size, task_quantity)):
-            # Generar un idEstrategia que aún no se haya utilizado la cantidad target_count de veces
+    args_list = []
+    for i in range(1, task_quantity + 1):
+        idEstrategia = (count_1 + count_2 + count_3) % 3 + 1
+        while (idEstrategia == 1 and count_1 >= target_count) or (
+                idEstrategia == 2 and count_2 >= target_count) or (
+                idEstrategia == 3 and count_3 >= target_count):
             idEstrategia = (count_1 + count_2 + count_3) % 3 + 1
-            while (idEstrategia == 1 and count_1 >= target_count) or (
-                    idEstrategia == 2 and count_2 >= target_count) or (
-                    idEstrategia == 3 and count_3 >= target_count):
-                idEstrategia = (count_1 + count_2 + count_3) % 3 + 1
 
-            # Incrementar el contador correspondiente
-            if idEstrategia == 1:
-                count_1 += 1
-            elif idEstrategia == 2:
-                count_2 += 1
-            elif idEstrategia == 3:
-                count_3 += 1
+        if idEstrategia == 1:
+            count_1 += 1
+        elif idEstrategia == 2:
+            count_2 += 1
+        elif idEstrategia == 3:
+            count_3 += 1
 
-            process = multiprocessing.Process(target=worker, args=(partida, idEstrategia, results_queue))
-            processes.append(process)
-            process.start()
-            partida += 1  # Incrementar el valor de x en cada ejecución
+        args_list.append((partida, idEstrategia))
+        partida += 1
 
-    # Esperar a que los procesos terminen en el orden correcto
-    for process in processes:
-        process.join()
-
-    # Extraer los resultados de la cola
-    results_list = []
-    while not results_queue.empty():
-        result = results_queue.get()
-        results_list.append(result)
-
-    # Inserta todos los resultados en la base de datos
-    print("RESULTS LIST: ", results_list)
+    results_list = pool.map(worker, args_list)
     insert_results(results_list)
 
     if analyze_performance:
