@@ -40,7 +40,7 @@ def play_game(partida, idEstrategia):
     deck = Deck()
     deck.shuffle()
 
-    game = Game(partida, 4, deck)
+    game = Game(partida, idEstrategia, deck)
 
     game.game_loop()
     results = game.results
