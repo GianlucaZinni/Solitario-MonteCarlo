@@ -13,6 +13,7 @@ strategies_output = {
     '1': "El Marino",
     '2': "La Socialista",
     '3': "El Bombero",
+    '4': "El Gobernador",
     False: "Perdió",
     True: "Ganó"
 }
@@ -39,7 +40,7 @@ def play_game(partida, idEstrategia):
     deck = Deck()
     deck.shuffle()
 
-    game = Game(partida, idEstrategia, deck)
+    game = Game(partida, 4, deck)
 
     game.game_loop()
     results = game.results
@@ -147,7 +148,7 @@ def main(analyze_performance=False):
 if __name__ == "__main__":
     freeze_support()
     create_database()
-    main(analyze_performance=True)
+    main(analyze_performance=False)
     df = fetch_data()
     plot_victory_by_strategy(df)
     plot_duration_by_strategy(df)

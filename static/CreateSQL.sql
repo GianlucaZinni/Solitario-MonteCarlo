@@ -24,7 +24,8 @@ INSERT INTO Estrategia (idEstrategia, Nombre, Descripcion)
 VALUES
 (1, 'El Marino', 'Mi ultima adquisicion'),
 (2, 'La Socialista', 'La era dictatorial'),
-(3, 'El Bombero', 'Quien trae la salvacion');
+(3, 'El Bombero', 'Quien trae la salvacion'),
+(4, 'El Gobernador', 'Generador de infortunios');
 
 -- Table Games
 

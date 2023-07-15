@@ -4,7 +4,7 @@ from conf.Foundation import Foundation
 from conf.Table import Table
 from pygame.locals import RESIZABLE
 from func.Movement import BasicMoves
-from func.Strategies import ElMarino, LaSocialista, ElBombero
+from func.Strategies import ElMarino, LaSocialista, ElBombero, ElGobernador
 
 class Game:
     def __init__(self, ejecucion, idEstrategia, deck):
@@ -129,6 +129,7 @@ class Game:
         elmarino = ElMarino()
         lasocialista = LaSocialista()
         elbombero = ElBombero()
+        elgobernador = ElGobernador()
 
         """Se declara la variable global *self.holding_cards* (puede ser accedida y modificada desde cualquier lugar del programa). 
         *self.holding_cards* es una lista de objetos de carta que se están sujetando.
@@ -206,7 +207,8 @@ class Game:
             Strategies = {
                 1 : (elmarino.UnderTaker, "El Marino"),
                 2 : (lasocialista.Gestionadora, "La Socialista"),
-                3 : (elbombero.ApagaLlamas, "El Bombero" )
+                3 : (elbombero.ApagaLlamas, "El Bombero"),
+                4 : (elgobernador.Progresismo, "El Gobernador")
             }
             
             """Bucle que se ejecuta según la estratégia."""
