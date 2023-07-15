@@ -18,24 +18,6 @@ strategies_output = {
     True: "Ganó"
 }
 
-def main():
-    task_quantity = 1000
-    results = []
-    batch_size = 15 #Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
-    pool = multiprocessing.Pool(processes=batch_size)
-    for i in range(0, task_quantity, batch_size):
-        games = [pool.apply_async(play_game, (j,)) for j in range(i, min(i + 15, task_quantity))]
-        for game in games:
-            try:
-                result = game.get()
-                results.append(result)
-                print(f"La tarea {game} fue completada")
-            except Exception as e:
-                print(f"Error en la partida: {e}")
-    print(f"Se completaron {len(results)} tareas.")
-    # Ejecucion de funcion que inserta los 1000 resultados en la DB
-    insert_results(results)
-
 def play_game(partida, idEstrategia):
     deck = Deck()
     deck.shuffle()
@@ -57,24 +39,24 @@ def main(analyze_performance=False):
         sequential_cpu_time = 0
         sequential_memory_usage = 0
 
-    task_quantity = 3  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 3)
-    batch_size = 3  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
+    task_quantity = 4  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 4)
+    batch_size = 4  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
 
-    if task_quantity < 3:
-        task_quantity = 3
+    if task_quantity < 4:
+        task_quantity = 4
 
     if batch_size <= 0 or batch_size > task_quantity:
         batch_size = task_quantity
 
-    if task_quantity % 3 != 0:
-        diferencia = 3 - (task_quantity % 3)  # Calcula la diferencia necesaria para que sea divisible por 3
-        if diferencia <= 1.5:
-            task_quantity += round(diferencia)  # Suma la diferencia redondeada si es menor o igual a 1.5
+    if task_quantity % 4 != 0:
+        diferencia = 4 - (task_quantity % 4)  # Calcula la diferencia necesaria para que sea divisible por 4
+        if diferencia <= 2:
+            task_quantity += round(diferencia)  # Suma la diferencia redondeada si es menor o igual a 2
         else:
-            task_quantity -= round(3 - diferencia)  # Resta la diferencia redondeada si es mayor a 1.5
+            task_quantity -= round(4 - diferencia)  # Resta la diferencia redondeada si es mayor a 2
 
-    target_count = task_quantity // 3  # Siendo 3 la cantidad de Estrategias
-    count_1 = count_2 = count_3 = 0  # Contadores para cada valor
+    target_count = task_quantity // 4  # Siendo 4 la cantidad de Estrategias
+    count_1 = count_2 = count_3 = count_4 = 0  # Contadores para cada valor
     partida = 1  # Variable contador para incrementar en cada ejecución
 
     if analyze_performance:
@@ -82,7 +64,7 @@ def main(analyze_performance=False):
         sequential_start_time = time.perf_counter()
         sequential_results_list = []
         for partida in range(1, task_quantity + 1):
-            idEstrategia = (partida - 1) % 3 + 1
+            idEstrategia = (partida - 1) % 4 + 1
             result = play_game(partida, idEstrategia)
             sequential_results_list.append(result)
         sequential_end_time = time.perf_counter()
@@ -95,11 +77,12 @@ def main(analyze_performance=False):
 
     args_list = []
     for i in range(1, task_quantity + 1):
-        idEstrategia = (count_1 + count_2 + count_3) % 3 + 1
+        idEstrategia = (count_1 + count_2 + count_3 + count_4) % 4 + 1
         while (idEstrategia == 1 and count_1 >= target_count) or (
                 idEstrategia == 2 and count_2 >= target_count) or (
-                idEstrategia == 3 and count_3 >= target_count):
-            idEstrategia = (count_1 + count_2 + count_3) % 3 + 1
+                idEstrategia == 3 and count_3 >= target_count) or (
+                idEstrategia == 4 and count_4 >= target_count):
+            idEstrategia = (count_1 + count_2 + count_3 + count_4) % 4 + 1
 
         if idEstrategia == 1:
             count_1 += 1
@@ -107,6 +90,8 @@ def main(analyze_performance=False):
             count_2 += 1
         elif idEstrategia == 3:
             count_3 += 1
+        elif idEstrategia == 4:
+            count_4 += 1
 
         args_list.append((partida, idEstrategia))
         partida += 1
