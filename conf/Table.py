@@ -1,7 +1,6 @@
 """
 La clase Table tiene el constructor de la clase que recibe
 """
-import time
 class Table:
 
     def __init__(self, x, deck, card_amount):
@@ -84,11 +83,14 @@ class Table:
     en la lista, muestra la carta anterior como cara visible.
     """
     def remove_card(self):
-        card = self.table_cards.pop()
-        time.sleep(0.5)
-        if len(self.table_cards) > 0:
-            self.table_cards[len(self.table_cards)-1].set_front_showing()
-        return card
+        if len(self.table_cards) <= 0:
+            print("The table is empty")
+        else:
+            card = self.table_cards.pop()
+            if len(self.table_cards) > 0:
+                self.table_cards[len(self.table_cards)-1].set_front_showing()
+            return card
+
     
     """
     Devuelve una lista de cartas que están debajo de la carta pasada como parámetro.

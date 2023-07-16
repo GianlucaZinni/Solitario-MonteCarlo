@@ -26,6 +26,8 @@ def play_game(partida, idEstrategia):
 
     game.game_loop()
     results = game.results
+    
+    print(results.get('duracion'))
 
     print(f"Partida: {partida} - Estrategia: {strategies_output.get(str(results.get('idEstrategia')))} finalizada - Resultado: {strategies_output.get(results.get('victoria'))}")
     return game.results
@@ -39,8 +41,8 @@ def main(analyze_performance=False):
         sequential_cpu_time = 0
         sequential_memory_usage = 0
 
-    task_quantity = 4  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 4)
-    batch_size = 4  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
+    task_quantity = 10  # Cantidad de procesos que se ejecutarán (siempre serán MÍNIMO 4)
+    batch_size = 20  # Cantidad de procesos que se ejecutan a la vez. (Tener cuidado con la memoria RAM)
 
     if task_quantity < 4:
         task_quantity = 4

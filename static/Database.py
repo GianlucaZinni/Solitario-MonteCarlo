@@ -102,8 +102,7 @@ def insert_results(results_list):
         insert_values = []
 
         for result in results_list:
-            duracion_str = result['duracion']
-            duracion = int(''.join(filter(str.isdigit, duracion_str)))
+            duracion = float(result['duracion'])
 
             values = (
                 result['victoria'],

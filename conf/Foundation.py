@@ -1,4 +1,3 @@
-import time
 class Foundation:
 
     def __init__(self, x, suit):
@@ -16,9 +15,10 @@ class Foundation:
         card.set_coordinates(self.x, self.y)
 
     def remove_card(self):          # Elimina una carta de la lista
-        if len(self.Foundation_pile) > 0:
+        if len(self.Foundation_pile) <= 0:
+            print("The foundation is empty")
+        else:
             card = self.Foundation_pile.pop()
-            time.sleep(0.5)
             return card
 
     """

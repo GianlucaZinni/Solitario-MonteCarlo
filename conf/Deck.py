@@ -41,10 +41,12 @@ class Deck:
     def add_cards(self, cards):     # función que agrega una carta al mazo.     (Sirve a la hora de rellenar de nuevo el mazo, luego de haber sacado todas las cartas)
         self.deck = cards
 
-    def remove_card(self):          # función que elimina una carta del mazo.   (Sirve para ir sacando una carta a la vez del mazo y mostrarla en la pila visible)
-        if len(self.deck) > 0:
+        # función que elimina una carta del mazo.   (Sirve para ir sacando una carta a la vez del mazo y mostrarla en la pila visible)
+    def remove_card(self):
+        if len(self.deck) <= 0:
+            print("The deck is empty")
+        else:
             card = self.deck.pop()
-            time.sleep(0.5)
             return card
     
     def reset_deck(self):

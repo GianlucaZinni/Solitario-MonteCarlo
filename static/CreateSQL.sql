@@ -32,7 +32,7 @@ VALUES
 CREATE TABLE IF NOT EXISTS Games (
 idGames INT NOT NULL AUTO_INCREMENT,
 victoria TINYINT NOT NULL,
-duracion INT NOT NULL,
+duracion FLOAT NOT NULL,
 movimientos INT NOT NULL,
 Mazo VARCHAR(5000) NOT NULL,
 Estrategia_idEstrategia INT NOT NULL,

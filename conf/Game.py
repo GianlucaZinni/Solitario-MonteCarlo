@@ -135,7 +135,8 @@ class Game:
         *self.holding_cards* es una lista de objetos de carta que se están sujetando.
         Se establece un bucle *while* que se ejecutará mientras la variable *game_is_running* = True, esta variable controla si el jeugo está en ejecución o no, y es declarada por defecto como True."""
         while self.game_is_running:
-            self.timer = int(time.time() - start_time)
+            self.timer = "{:.5f}".format(time.time() - start_time)
+            
             mouse_x, mouse_y = pygame.mouse.get_pos()
             moves.update_mouse_position(mouse_x, mouse_y)
 
@@ -228,7 +229,7 @@ class Game:
             results = {
                 "idGames": None,
                 "victoria": True,
-                "duracion": f"{self.timer} segundos",
+                "duracion": self.timer,
                 "movimientos": self.moves,
                 "mazo" : self.full_deck,
                 "idEstrategia": self.idEstrategia
@@ -243,7 +244,7 @@ class Game:
             results = {
                 "idGames": None,
                 "victoria": False,
-                "duracion": f"{self.timer} segundos",
+                "duracion": self.timer,
                 "movimientos": self.moves,
                 "mazo" : self.full_deck,
                 "idEstrategia": self.idEstrategia

@@ -248,7 +248,6 @@ class BasicMoves:
                     table.remove_card()
                     moved = True
                     game.moves += 1
-                    time.sleep(0.2)
                     break
                 else:
                     foundation_card = foundation.get_top_card()
@@ -258,7 +257,6 @@ class BasicMoves:
                             table.remove_card()
                             moved = True
                             game.moves += 1
-                            time.sleep(0.2)
                             break
         return moved
 
@@ -271,7 +269,6 @@ class BasicMoves:
                         game.waste.remove_card()
                         moved = True
                         game.moves += 1
-                        time.sleep(0.2)
                         break
                     else:
                         foundation_card = foundation.get_top_card()
@@ -281,7 +278,6 @@ class BasicMoves:
                                 game.waste.remove_card()
                                 moved = True
                                 game.moves += 1
-                                time.sleep(0.2)
                                 break
         return moved
 
@@ -297,7 +293,6 @@ class BasicMoves:
                         table.remove_card()
                         moved = True
                         game.moves += 1
-                        time.sleep(0.2)
                         break
                 else:
                     if card.get_value() == 13 and prev_card != card and dest_card is None:
@@ -305,7 +300,6 @@ class BasicMoves:
                         table.remove_card()
                         moved = True
                         game.moves += 1
-                        time.sleep(0.2)
                         break      
         return moved
 
@@ -319,7 +313,6 @@ class BasicMoves:
                         game.waste.remove_card()
                         moved = True
                         game.moves += 1
-                        time.sleep(0.2)
                         break
             else:
                 if card.get_value() == 13:
@@ -327,7 +320,6 @@ class BasicMoves:
                     game.waste.remove_card()
                     moved = True
                     game.moves += 1
-                    time.sleep(0.2)
                     break
         return moved
 
@@ -346,7 +338,6 @@ class BasicMoves:
                             cards[0].clear()
                             moved = True
                             game.moves += 1
-                            time.sleep(0.2)
                             break
 
                 if dest_card is not None:
@@ -357,7 +348,6 @@ class BasicMoves:
                                 table.remove_card()
                             moved = True
                             game.moves += 1
-                            time.sleep(0.2)
                             break
         return moved
     
@@ -377,7 +367,6 @@ class BasicMoves:
                             dest_table.add_new_card(card)
                             moved = True
                             game.moves += 2
-                            time.sleep(0.2)
                             break
         return moved
 
@@ -402,7 +391,6 @@ class BasicMoves:
                                     dest_table1.add_new_card(card)
                                     moved = True
                                     game.moves += 3
-                                    time.sleep(0.2)
                                     break
         return moved
     
@@ -420,7 +408,6 @@ class BasicMoves:
                         foundation.add_card(prev_card)
                         moved = True
                         game.moves += 2
-                        time.sleep(0.2)
                         break
         return moved
     
@@ -439,7 +426,6 @@ class BasicMoves:
                         dest_table.add_new_card(waste_card)
                         moved = True
                         game.moves += 2
-                        time.sleep(0.2)
                         break
         return moved
         

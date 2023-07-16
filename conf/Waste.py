@@ -1,5 +1,3 @@
-import time
-
 class Waste:
 
     def __init__(self):
@@ -17,9 +15,10 @@ class Waste:
         self.set_cards()
 
     def remove_card(self):              # Remueve la última carta de la pila de residuo NO visible.
-        if len(self.waste_pile) > 0:
+        if len(self.waste_pile) <= 0:
+            print("The waste is empty")
+        else:
             card = self.waste_pile.pop()
-            time.sleep(0.5)
             return card
 
     def empty(self):                    # Vacía la pila de residuo NO visible esta vacía.
