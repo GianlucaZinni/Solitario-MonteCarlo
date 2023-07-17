@@ -40,9 +40,7 @@ def fetch_data():
 
         # Cerrar el cursor (se cierra automáticamente al salir del contexto "with")
         cursor.close()
-
     return df
-
 
 
 def plot_victory_by_strategy(df):

@@ -63,7 +63,7 @@ class ElMarino(Strategy):
             game.result_counter = 5
             return
 
-class LaSocialista(Strategy): # Primero intenta entre mismas tables y despues foundation
+class LaSocialista(Strategy):
     
     def call(self):
         if self.primer_llamado:
@@ -110,7 +110,7 @@ class LaSocialista(Strategy): # Primero intenta entre mismas tables y despues fo
             game.result_counter = 5
             return
 
-class ElBombero(Strategy): # Primero intenta al foundation y después entre las tables
+class ElBombero(Strategy):
 
     def call(self):
         if self.primer_llamado:

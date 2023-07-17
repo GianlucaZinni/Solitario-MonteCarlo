@@ -152,19 +152,19 @@ class Game:
                     pygame.quit()
                     sys.exit()
             
-                """En este bloque de código se verifica si el evento actual es un click del botón del mouse. 
-                Si es así, se llaman a dos funciones: clicked_new_card(x, y) y check_holding_card(x, y)."""
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    moves.clicked_new_card(self)
-                    moves.check_holding_card(self)
+                # """En este bloque de código se verifica si el evento actual es un click del botón del mouse. 
+                # Si es así, se llaman a dos funciones: clicked_new_card(x, y) y check_holding_card(x, y)."""
+                # if event.type == pygame.MOUSEBUTTONDOWN:
+                #     moves.clicked_new_card(self)
+                #     moves.check_holding_card(self)
 
-                """En este bloque de código se verifica si el evento actual es la desclick del botón del mouse. 
-                Si *self.holding_cards* no está vacía, se llama a la función place_card(x, y), se establece *self.holding_cards* como una lista vacía y se llama a la función waste.set_cards()."""
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if self.holding_cards != []:
-                        moves.place_card(self)
-                        self.holding_cards = []
-                        self.waste.set_cards()
+                # """En este bloque de código se verifica si el evento actual es la desclick del botón del mouse. 
+                # Si *self.holding_cards* no está vacía, se llama a la función place_card(x, y), se establece *self.holding_cards* como una lista vacía y se llama a la función waste.set_cards()."""
+                # if event.type == pygame.MOUSEBUTTONUP:
+                #     if self.holding_cards != []:
+                #         moves.place_card(self)
+                #         self.holding_cards = []
+                #         self.waste.set_cards()
 
             """En esta línea se dibuja la imagen de fondo en la ventana del juego. self.self.backgroundImage es una imagen cargada anteriormente. (detrás de todo)"""
             self.screen.blit(self.backgroundImage, (0, 0))
@@ -189,14 +189,14 @@ class Game:
                     pygame.sprite.GroupSingle(card).draw(self.screen)
 
             """El bucle FOR recorre cada carta en la pila de descarte (waste) llamando al método get_show_waste_pile(). 
-            Luego, se verifica si la carta no se está sosteniendo con el ratón (not card in holding_cards). 
+            Luego, se verifica si la carta no se está sosteniendo con el mouse (not card in holding_cards). 
             Si es así, la carta se dibuja en la pantalla usando el método draw() de pygame.sprite.GroupSingle."""
             for card in self.waste.get_show_waste_pile():
                 if not card in self.holding_cards:
                     pygame.sprite.GroupSingle(card).draw(self.screen)
 
-            """Función que dibuja cualquier carta que se esté sosteniendo con el ratón en la posición actual del ratón."""
-            moves.card_follow_mouse(self)
+            # """Función que dibuja cualquier carta que se esté sosteniendo con el ratón en la posición actual del ratón."""
+            # moves.card_follow_mouse(self)
 
             """Se llama a la función message_display() tres veces para mostrar el temporizador, la puntuación y el número de movimientos en la parte superior de la pantalla."""
             self.message_display(str(self.timer), (639, 39))
