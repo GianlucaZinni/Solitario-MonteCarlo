@@ -120,7 +120,6 @@ class ElBombero(Strategy):
     def ApagaLlamas(self, game, moves):
         self.call()
         moved = False
-        
         check_if_moved = True
         
         for table in reversed(game.tables):
@@ -134,12 +133,15 @@ class ElBombero(Strategy):
                         if len(cards[0]) > 1:
                             moved = moves.upper_card_table(game, cards, table, moved)
     
-        if not moved and len(game.deck.get_deck()) > 0 or len(game.waste.get_waste_pile()) > 0:
+        if (not moved and len(game.deck.get_deck()) > 0 
+            or len(game.waste.get_waste_pile()) > 0):
             if not game.waste.show_is_empty():
                 moved = moves.check_waste_card(game, moved)
         
         if not moved and len(game.deck.get_deck()) <= 0:
-            game.deck.add_cards(list(reversed(game.waste.get_waste_pile().copy())))
+            game.deck.add_cards(list(
+                reversed(game.waste.get_waste_pile().copy())
+                ))
             game.waste.empty()
             game.moves += 1
             check_if_moved = False
@@ -153,7 +155,8 @@ class ElBombero(Strategy):
         if True in game.check_if_lock:
             game.check_if_lock.clear()
             return
-        if True not in game.check_if_lock and len(game.check_if_lock) >= 24:
+        if (True not in game.check_if_lock 
+            and len(game.check_if_lock) >= 24):
             game.result_counter = 5
             return
 

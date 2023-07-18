@@ -11,20 +11,6 @@ class BasicMoves:
         self.mouse_y = mouse_y
 
     # Movimientos automáticos
-
-    def check_waste_card(self, game, moved):
-        """Obtiene la carta visible del mazo VISIBLE."""
-        waste_card = game.waste.get_top_card()
-        if waste_card is not None:
-            """Función que revisa si puede mover la carta seleccionada a algun foundation."""
-            moved = self.waste_card_foundation(game, waste_card, moved)
-            if not moved:
-                """Función que revisa si puede mover la carta seleccionada a alguna table."""
-                moved = self.waste_card_table(game, waste_card, moved)
-                if not moved:
-                    moved = self.foundation_to_table_deck_to_table(game, waste_card, moved)
-        return moved
-
     def bottom_card_foundation(self, game, card, table, moved): # Función que comprueba si la carta de la parte inferior de una tabla se puede colocar en un foundation automáticamente
         for foundation in game.foundations:
             if foundation.get_suit() == card.get_suit():
@@ -43,27 +29,6 @@ class BasicMoves:
                             moved = True
                             game.moves += 1
                             break
-        return moved
-
-    def waste_card_foundation(self, game, waste_card, moved): # Función que comprueba si la carta de descarte se puede colocar en una foundation automáticamente
-        for foundation in game.foundations:
-            if waste_card is not None:
-                if foundation.get_suit() == waste_card.get_suit():
-                    if waste_card.get_value() == 1:
-                        foundation.add_card(waste_card)
-                        game.waste.remove_card()
-                        moved = True
-                        game.moves += 1
-                        break
-                    else:
-                        foundation_card = foundation.get_top_card()
-                        if foundation_card is not None:
-                            if foundation_card.get_value() + 1 == waste_card.get_value():
-                                foundation.add_card(waste_card)
-                                game.waste.remove_card()
-                                moved = True
-                                game.moves += 1
-                                break
         return moved
 
     def bottom_card_table(self, game, card, table, moved): # Función que comprueba si la carta de la parte inferior de una tabla se puede colocar en otra tabla automáticamente
@@ -88,25 +53,6 @@ class BasicMoves:
                         break      
         return moved
 
-    def waste_card_table(self, game, card, moved): # Función que comprueba si la carta de descarte se puede colocar en una tabla automáticamente
-        for dest_table in game.tables:
-            dest_card = dest_table.bottom_card()
-            if dest_card is not None:
-                if dest_card.get_color() != card.get_color():
-                    if dest_card.get_value() - 1 == card.get_value():
-                        dest_table.add_new_card(card)
-                        game.waste.remove_card()
-                        moved = True
-                        game.moves += 1
-                        break
-            else:
-                if card.get_value() == 13:
-                    dest_table.add_new_card(card)
-                    game.waste.remove_card()
-                    moved = True
-                    game.moves += 1
-                    break
-        return moved
 
     def upper_card_table(self, game, cards, table, moved): # Función que comprueba si la carta visible de la parte superior de una tabla se puede colocar en otra tabla automáticamente
         for dest_table in game.tables:
@@ -179,7 +125,7 @@ class BasicMoves:
                                     break
         return moved
     
-    def prev_to_foundation(self, game, card, table, moved): # Funciona
+    def prev_to_foundation(self, game, card, table, moved):
         prev_card = table.prev_card()
         for dest_table in game.tables:
             dest_card = dest_table.bottom_card()
@@ -194,6 +140,60 @@ class BasicMoves:
                         moved = True
                         game.moves += 2
                         break
+        return moved
+    
+    def check_waste_card(self, game, moved):
+        """Obtiene la carta visible del mazo VISIBLE."""
+        waste_card = game.waste.get_top_card()
+        if waste_card is not None:
+            """Función que revisa si puede mover la carta seleccionada a algun foundation."""
+            moved = self.waste_card_foundation(game, waste_card, moved)
+            if not moved:
+                """Función que revisa si puede mover la carta seleccionada a alguna table."""
+                moved = self.waste_card_table(game, waste_card, moved)
+                if not moved:
+                    moved = self.foundation_to_table_deck_to_table(game, waste_card, moved)
+        return moved
+
+    def waste_card_foundation(self, game, waste_card, moved): # Función que comprueba si la carta de descarte se puede colocar en una foundation automáticamente
+        for foundation in game.foundations:
+            if waste_card is not None:
+                if foundation.get_suit() == waste_card.get_suit():
+                    if waste_card.get_value() == 1:
+                        foundation.add_card(waste_card)
+                        game.waste.remove_card()
+                        moved = True
+                        game.moves += 1
+                        break
+                    else:
+                        foundation_card = foundation.get_top_card()
+                        if foundation_card is not None:
+                            if foundation_card.get_value() + 1 == waste_card.get_value():
+                                foundation.add_card(waste_card)
+                                game.waste.remove_card()
+                                moved = True
+                                game.moves += 1
+                                break
+        return moved
+    
+    def waste_card_table(self, game, card, moved): # Función que comprueba si la carta de descarte se puede colocar en una tabla automáticamente
+        for dest_table in game.tables:
+            dest_card = dest_table.bottom_card()
+            if dest_card is not None:
+                if dest_card.get_color() != card.get_color():
+                    if dest_card.get_value() - 1 == card.get_value():
+                        dest_table.add_new_card(card)
+                        game.waste.remove_card()
+                        moved = True
+                        game.moves += 1
+                        break
+            else:
+                if card.get_value() == 13:
+                    dest_table.add_new_card(card)
+                    game.waste.remove_card()
+                    moved = True
+                    game.moves += 1
+                    break
         return moved
     
     def foundation_to_table_deck_to_table(self, game, waste_card, moved): # Funciona
@@ -213,7 +213,7 @@ class BasicMoves:
                         game.moves += 2
                         break
         return moved
-        
+    
     # """Función que permite que las cartas seleccionadas por el usuario sigan al cursor mientras se arrastran por la pantalla."""
     # def card_follow_mouse(self, game): # Función que genera el efecto de arrastrar una carta
         

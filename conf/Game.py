@@ -28,7 +28,7 @@ class Game:
         """Definen los efectos de sonido que se reproducen en el juego.
         La función *pygame.mixer.sound()* se utiliza para cargar el archivo de sonido en la variable correspondiente.
         Luego se reproduce el sonido al barajar las cartas utiliando la función *play()*"""
-        self.place_sound = pygame.mixer.Sound('static/assets/sounds/flip.wav')
+        # self.place_sound = pygame.mixer.Sound('static/assets/sounds/flip.wav')
 
         """Se instancia la variable booleana *game_is_running* que se utilizará para mantener encendido el juego."""
         self.game_is_running = True
@@ -43,9 +43,9 @@ class Game:
         self.full_deck = self.deck.insert_all_cards()
 
         # Se declaran las variables globales utilizadas por el juego.
-        self.holding_cards = []         # Lista vacía que se utilizará para almacenar cartas que el usuario esta sosteniendo.
-        self.holding_card_group = None  # Variable establecida en None que luego se actualizará para indicar qué grupo de cartas esta sosteniendo el usuario.
-        self.mouse_cords = ()           # Tupla vacía que se actualizará cada vez que el usuario mueva el raton.
+        # self.holding_cards = []         # Lista vacía que se utilizará para almacenar cartas que el usuario esta sosteniendo.
+        # self.holding_card_group = None  # Variable establecida en None que luego se actualizará para indicar qué grupo de cartas esta sosteniendo el usuario.
+        # self.mouse_cords = ()           # Tupla vacía que se actualizará cada vez que el usuario mueva el raton.
         self.moves = 0                  # Contador de movimientos.
         self.timer = 0                  # Contador de tiempo.
 
