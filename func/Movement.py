@@ -1,14 +1,12 @@
-import pygame, time
-
 class BasicMoves:
-    def __init__(self):
+    # def __init__(self):
         
-        self.mouse_x = 0
-        self.mouse_y = 0
+    #     self.mouse_x = 0
+    #     self.mouse_y = 0
         
-    def update_mouse_position(self, mouse_x, mouse_y):  # Actualiza la posición del mouse
-        self.mouse_x = mouse_x
-        self.mouse_y = mouse_y
+    # def update_mouse_position(self, mouse_x, mouse_y):  # Actualiza la posición del mouse
+    #     self.mouse_x = mouse_x
+    #     self.mouse_y = mouse_y
 
     # Movimientos automáticos
     def bottom_card_foundation(self, game, card, table, moved): # Función que comprueba si la carta de la parte inferior de una tabla se puede colocar en un foundation automáticamente

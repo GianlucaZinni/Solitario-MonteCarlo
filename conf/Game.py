@@ -43,9 +43,9 @@ class Game:
         self.full_deck = self.deck.insert_all_cards()
 
         # Se declaran las variables globales utilizadas por el juego.
-        # self.holding_cards = []         # Lista vacía que se utilizará para almacenar cartas que el usuario esta sosteniendo.
         # self.holding_card_group = None  # Variable establecida en None que luego se actualizará para indicar qué grupo de cartas esta sosteniendo el usuario.
         # self.mouse_cords = ()           # Tupla vacía que se actualizará cada vez que el usuario mueva el raton.
+        self.holding_cards = []         # Lista vacía que se utilizará para almacenar cartas que el usuario esta sosteniendo.
         self.moves = 0                  # Contador de movimientos.
         self.timer = 0                  # Contador de tiempo.
 
@@ -137,9 +137,8 @@ class Game:
         while self.game_is_running:
             self.timer = "{:.5f}".format(time.time() - start_time)
             
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            moves.update_mouse_position(mouse_x, mouse_y)
-
+            # mouse_x, mouse_y = pygame.mouse.get_pos()
+            # moves.update_mouse_position(mouse_x, mouse_y)
 
             """En este bucle se recorren todos los eventos de la cola de eventos de Pygame. 
             Esto permite manejar eventos de teclado, mouse y otros eventos relacionados con la ventana del juego."""
@@ -195,7 +194,7 @@ class Game:
                 if not card in self.holding_cards:
                     pygame.sprite.GroupSingle(card).draw(self.screen)
 
-            # """Función que dibuja cualquier carta que se esté sosteniendo con el ratón en la posición actual del ratón."""
+            # """Función que dibuja cualquier carta que se esté sosteniendo con el mouse en la posición actual del mouse."""
             # moves.card_follow_mouse(self)
 
             """Se llama a la función message_display() tres veces para mostrar el temporizador, la puntuación y el número de movimientos en la parte superior de la pantalla."""
